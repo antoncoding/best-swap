@@ -1,24 +1,27 @@
 import React from 'react';
-import logo from './logo.svg';
+import StatusBox from './Componenets/StatusBox'
+import SearchBox from './Componenets/TxSearchBox'
+import Grid from '@material-ui/core/Grid'
+import changellyImg from './changelly-logo.png'
 import './App.css';
+
 
 function App() {
   return (
-    <div className="App">
+    <div className="App" >
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+      <img alt={'logo'} src={changellyImg} width={500} ></img>
+      <Grid item xs={11}
+        sm={10}
+        container
+        direction="row"
+      >
+          <StatusBox/>
+          <SearchBox/>
+      </Grid>
+        
       </header>
+      
     </div>
   );
 }
