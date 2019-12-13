@@ -16,8 +16,11 @@ import {
   TableRow,
 } from '@material-ui/core'
 
-import { apiKey, apiSecret } from '../config'
+// import { apiKey, apiSecret } from '../config'
 import { Changelly } from 'changelly-js'
+
+const apiKey = process.env.REACT_APP_APIKey
+const apiSecret = process.env.REACT_APP_APISecret
 
 const changelly = new Changelly(apiKey, apiSecret)
 
