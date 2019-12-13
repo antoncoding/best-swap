@@ -14,14 +14,15 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  font-family: 'Roboto';
+  background-color: #e5ecf8;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  /* font-size: calc(10px + 2vmin); */
+  color: rgb(6, 26, 66);
 }
 
 .App-link {
