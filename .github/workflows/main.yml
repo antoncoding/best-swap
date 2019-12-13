@@ -1,6 +1,9 @@
 name: CI
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -21,4 +24,4 @@ jobs:
         REACT_APP_APIKey: ${{ secrets.REACT_APP_APIKey }}
         REACT_APP_APISecret: ${{ secrets.REACT_APP_APISecret }}
         BRANCH: gh-pages
-        FOLDER: dist
+        FOLDER: build
