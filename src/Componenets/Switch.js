@@ -1,10 +1,23 @@
 import React, { useState } from 'react'
 
 import AwesomeDebouncePromise from 'awesome-debounce-promise'
-import { useAsync } from 'react-async-hook';
+import { useAsync } from 'react-async-hook'
 import useConstant from 'use-constant'
 
-import { DropDown, Button, Box, Split, IconArrowDown, TextInput, Field, textStyle } from '@aragon/ui'
+import {
+  DropDown,
+  Button,
+  Box,
+  Split,
+  IconArrowDown,
+  TextInput,
+  Field,
+  textStyle,
+  Modal,
+  EmptyStateCard,
+  DataView,
+  IdentityBadge,
+} from '@aragon/ui'
 
 // import { apiKey, apiSecret } from '../config'
 import { Changelly } from 'changelly-js'
@@ -15,41 +28,45 @@ const apiSecret = process.env.REACT_APP_APISecret
 const changelly = new Changelly(apiKey, apiSecret)
 
 const getExchangeAmount = async (_from, _to, _amount) => {
-  const result = await changelly.getExchangeAmount([ {from: _from, to: _to, amount: _amount} ])
+  const result = await changelly.getExchangeAmount([{ from: _from, to: _to, amount: _amount }])
   return result[0].result
 }
 
 const useSearchExchangeAmount = () => {
   // Handle the input text state
-  const [from, setFrom] = useState('btc');
-  const [to, setTo] = useState('eth');
+  const [from, setFrom] = useState('btc')
+  const [to, setTo] = useState('eth')
   const [amount, setAmount] = useState(0)
 
   // Debounce the original search async function
-  const debouncedGetExchangeAmount = useConstant(() =>
-    AwesomeDebouncePromise(getExchangeAmount, 300)
-  );
+  const debouncedGetExchangeAmount = useConstant(() => AwesomeDebouncePromise(getExchangeAmount, 300))
 
   const search = useAsync(
     async (from, to, amount) => {
       // If the input is empty, return nothing immediately (without the debouncing delay!)
       if (from === to) {
-        return [0];
+        return [0]
       }
       // Else we use the debounced api
       else {
-        return debouncedGetExchangeAmount(from, to, amount);
+        return debouncedGetExchangeAmount(from, to, amount)
       }
     },
     // Ensure a new request is made everytime the text changes (even if it's debounced)
     [from, to, amount]
-  );
+  )
 
   // Return everything needed for the hook consumer
   return {
-    from, to, amount, setFrom, setTo, setAmount, search,
-  };
-};
+    from,
+    to,
+    amount,
+    setFrom,
+    setTo,
+    setAmount,
+    search,
+  }
+}
 
 export default function Switch() {
   const [currencies, updateCurrencies] = useState([])
@@ -58,12 +75,16 @@ export default function Switch() {
   const [selectedFrom, setSelectedFrom] = useState(0)
   const [selectedTo, setSelectedTo] = useState(1)
 
-  const { from, setFrom, to, setTo, amount, setAmount, search  } = useSearchExchangeAmount()
+  const [address, setAddress] = useState('')
 
-  
+  const { from, setFrom, to, setTo, amount, setAmount, search } = useSearchExchangeAmount()
+
   const [fresh, setFresh] = useState(true)
 
   const [minAmountFloat, setMinAmountFloat] = useState(0)
+
+  // for Exchange panel
+  const [opened, setOpened] = useState(false)
 
   let handleFromCoinChange = (index, items) => {
     setSelectedFrom(index)
@@ -87,6 +108,10 @@ export default function Switch() {
     setAmount(event.target.value)
   }
 
+  const handleAddressChange = async event => {
+    setAddress(event.target.value)
+  }
+
   let updateMinAmounts = (_from, _to) => {
     changelly.getPairsParams([{ from: _from, to: _to }]).then(pairParams => {
       const param = pairParams[0]
@@ -94,8 +119,9 @@ export default function Switch() {
     })
   }
 
-  let logger = () => {
-    console.log(`from ${selectedFrom} - ${from}, to ${selectedTo} - ${to}`)
+  const handleExchange = () => {
+    console.log(`go exchange`)
+    setOpened(true)
   }
 
   if (fresh) {
@@ -115,6 +141,20 @@ export default function Switch() {
   return (
     <>
       <Box>
+        <Modal width={700} padding={40} visible={opened} onClose={() => setOpened(false)}>
+          <EmptyStateCard text='Confirm the Deal.' />
+          <DataView
+            fields={['field', 'data']}
+            entries={[
+              { account: '0x12345678', amount: '-7.900,33 ANT' },
+              { account: 'addr()', amount: '-8.760,90 ANT' },
+              { account: 'addr()', amount: '+5.321 ANT' },
+            ]}
+            renderEntry={({ account, amount }) => {
+              return [<IdentityBadge entity={account} />, <div>{amount}</div>]
+            }}
+          />
+        </Modal>
         <Split
           primary={
             <>
@@ -122,18 +162,12 @@ export default function Switch() {
                 <TextInput
                   type='number'
                   value={amount}
-                  placeholder='asldkfja'
                   onChange={event => {
                     handleAmountChange(event)
                   }}
                   adornment={<img alt={`${from}`} src={`https://cryptoicons.org/api/icon/${from}/25`} />}
                   adornmentPosition='end'
                 ></TextInput>
-                <div
-                  css={`
-                    ${textStyle('title1')};
-                  `}
-                ></div>
               </Field>
             </>
           }
@@ -153,15 +187,21 @@ export default function Switch() {
       <Box>
         <Split
           primary={
-            <Field label='Amount'>
-              <TextInput
-                type='number'
-                disabled
-                value={search.result || 0}
-                adornment={<img alt={`${to}`} src={`https://cryptoicons.org/api/icon/${to}/25`} />}
-                adornmentPosition='end'
-              ></TextInput>
-            </Field>
+            <div>
+              <Field label='Amount'>
+                <TextInput
+                  type='number'
+                  disabled
+                  value={search.result || 0}
+                  adornment={<img alt={`${to}`} src={`https://cryptoicons.org/api/icon/${to}/25`} />}
+                  adornmentPosition='end'
+                ></TextInput>
+              </Field>
+
+              <Field label='Withdraw Address'>
+                <TextInput wide='true' onChange={handleAddressChange} type='text' value={address}></TextInput>
+              </Field>
+            </div>
           }
           secondary={
             <Field label='To'>
@@ -170,8 +210,9 @@ export default function Switch() {
           }
         ></Split>
       </Box>
-
-      <Button onClick={logger}> </Button>
+      <div style={{ padding: '20px', display: 'flex', justifyContent: 'center' }}>
+        <Button onClick={handleExchange} label='Exchange' mode='strong' />
+      </div>
     </>
   )
 }

@@ -19,7 +19,7 @@ function App() {
         }
         secondary={
         <Button 
-          mode='strong' 
+          // mode='strong' 
           label='Learn More' 
           icon={<IconPlus />} 
           onClick={() => {
@@ -36,20 +36,6 @@ function App() {
           </>
         }
       />
-
-      <SidePanel title='Add tokens' opened={sidePanelOpened} onClose={() => setSidePanelOpened(false)}>
-        <DataView
-            fields={['Account', 'Amount']}
-            entries={[
-              { account: 'test1', amount: '-7.900,33 ANT' },
-              { account: 'test2', amount: '-8.760,90 ANT' },
-              { account: 'test3', amount: '+5.321 ANT' },
-            ]}
-            renderEntry={({ account, amount }) => {
-              return [<IdentityBadge entity={account} />]
-            }}
-          />
-      </SidePanel>
     </Main>
   )
 }
