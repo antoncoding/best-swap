@@ -1,19 +1,22 @@
 {
-  "name": "changelly-lookup",
+  "name": "coin-exchange",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@aragon/ui": "^1.0.0",
     "@material-ui/core": "^4.7.2",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "babel-preset-react-app": "^9.1.0",
     "changelly-js": "^1.5.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-scripts": "3.3.0",
+    "styled-components": "^4.4.1",
     "typeface-roboto": "0.0.75"
   },
-  "homepage": "http://CoolBitX-Technology.github.io/changelly-log",
+  "homepage": "http://antoncoding.github.io/coin-exchange",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
