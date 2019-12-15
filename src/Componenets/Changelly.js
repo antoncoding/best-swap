@@ -1,22 +1,19 @@
 import React, { useState } from 'react'
 
+import LastExchangeBox from './LastExchangeBox'
+import ExchangeModal from './ExchangeModal'
+
 import AwesomeDebouncePromise from 'awesome-debounce-promise'
 import { useAsync } from 'react-async-hook'
 import useConstant from 'use-constant'
 
 import {
   DropDown,
-  Button,
   Box,
   Split,
   IconArrowDown,
   TextInput,
   Field,
-  textStyle,
-  Modal,
-  EmptyStateCard,
-  DataView,
-  IdentityBadge,
 } from '@aragon/ui'
 
 // import { apiKey, apiSecret } from '../config'
@@ -76,6 +73,7 @@ export default function ChangellyEx() {
   const [selectedTo, setSelectedTo] = useState(1)
 
   const [address, setAddress] = useState('')
+  const [refundAddress, setRefundAddress] = useState('')
 
   const { from, setFrom, to, setTo, amount, setAmount, search } = useSearchExchangeAmount()
 
@@ -83,8 +81,6 @@ export default function ChangellyEx() {
 
   const [minAmountFloat, setMinAmountFloat] = useState(0)
 
-  // for Exchange panel
-  const [opened, setOpened] = useState(false)
 
   let handleFromCoinChange = (index, items) => {
     setSelectedFrom(index)
@@ -112,6 +108,10 @@ export default function ChangellyEx() {
     setAddress(event.target.value)
   }
 
+  const handleRefundAddressChange = async event => {
+    setRefundAddress(event.target.value)
+  }
+
   let updateMinAmounts = (_from, _to) => {
     changelly.getPairsParams([{ from: _from, to: _to }]).then(pairParams => {
       const param = pairParams[0]
@@ -119,10 +119,7 @@ export default function ChangellyEx() {
     })
   }
 
-  const handleExchange = () => {
-    console.log(`go exchange`)
-    setOpened(true)
-  }
+  
 
   if (fresh) {
     changelly.getCurrenciesFull().then(coins => {
@@ -143,19 +140,7 @@ export default function ChangellyEx() {
     primary={
       <div>
       <Box>
-        <Modal width={700} padding={40} visible={opened} onClose={() => setOpened(false)}>
-          <DataView
-            fields={['field', 'data']}
-            entries={[
-              { account: '0x12345678', amount: '-7.900,33 ANT' },
-              { account: 'addr()', amount: '-8.760,90 ANT' },
-              { account: 'addr()', amount: '+5.321 ANT' },
-            ]}
-            renderEntry={({ account, amount }) => {
-              return [<IdentityBadge entity={account} />, <div>{amount}</div>]
-            }}
-          />
-        </Modal>
+        
         <Split
           primary={
             <>
@@ -169,6 +154,10 @@ export default function ChangellyEx() {
                   adornment={<img alt={`${from}`} src={`https://cryptoicons.org/api/icon/${from}/25`} />}
                   adornmentPosition='end'
                 ></TextInput>
+              </Field>
+
+              <Field label='Refund Address'>
+                <TextInput required wide='true' onChange={handleRefundAddressChange} type='text' value={refundAddress}></TextInput>
               </Field>
             </>
           }
@@ -200,7 +189,7 @@ export default function ChangellyEx() {
               </Field>
 
               <Field label='Withdraw Address'>
-                <TextInput wide='true' onChange={handleAddressChange} type='text' value={address}></TextInput>
+                <TextInput required wide='true' onChange={handleAddressChange} type='text' value={address}></TextInput>
               </Field>
             </div>
           }
@@ -212,16 +201,13 @@ export default function ChangellyEx() {
         ></Split>
       </Box>
       <div style={{ padding: '20px', display: 'flex', justifyContent: 'center' }}>
-        <Button onClick={handleExchange} label='Exchange' mode='strong' />
+        {ExchangeModal(from, to, amount, address, refundAddress, changelly)}
       </div>
     </div>
     }
 
     secondary = {
-      <div>
-        <EmptyStateCard text='Last Exchange Info' />
-        
-      </div>
+      LastExchangeBox(from, to, amount, search.result, 'akj1239dm10qk12m', changelly )
     }
     />
   )
