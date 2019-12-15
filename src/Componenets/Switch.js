@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 
 import AwesomeDebouncePromise from 'awesome-debounce-promise'
+import { useAsync } from 'react-async-hook';
+import useConstant from 'use-constant'
 
 import { DropDown, Button, Box, Split, IconArrowDown, TextInput, Field, textStyle } from '@aragon/ui'
 
@@ -12,6 +14,43 @@ const apiSecret = process.env.REACT_APP_APISecret
 
 const changelly = new Changelly(apiKey, apiSecret)
 
+const getExchangeAmount = async (_from, _to, _amount) => {
+  const result = await changelly.getExchangeAmount([ {from: _from, to: _to, amount: _amount} ])
+  return result[0].result
+}
+
+const useSearchExchangeAmount = () => {
+  // Handle the input text state
+  const [from, setFrom] = useState('btc');
+  const [to, setTo] = useState('eth');
+  const [amount, setAmount] = useState(0)
+
+  // Debounce the original search async function
+  const debouncedGetExchangeAmount = useConstant(() =>
+    AwesomeDebouncePromise(getExchangeAmount, 300)
+  );
+
+  const search = useAsync(
+    async (from, to, amount) => {
+      // If the input is empty, return nothing immediately (without the debouncing delay!)
+      if (from === to) {
+        return [0];
+      }
+      // Else we use the debounced api
+      else {
+        return debouncedGetExchangeAmount(from, to, amount);
+      }
+    },
+    // Ensure a new request is made everytime the text changes (even if it's debounced)
+    [from, to, amount]
+  );
+
+  // Return everything needed for the hook consumer
+  return {
+    from, to, amount, setFrom, setTo, setAmount, search,
+  };
+};
+
 export default function Switch() {
   const [currencies, updateCurrencies] = useState([])
   const [currencyLabels, undateLabels] = useState([])
@@ -19,24 +58,12 @@ export default function Switch() {
   const [selectedFrom, setSelectedFrom] = useState(0)
   const [selectedTo, setSelectedTo] = useState(1)
 
-  const [from, setFrom] = useState('btc')
-  const [to, setTo] = useState('eth')
+  const { from, setFrom, to, setTo, amount, setAmount, search  } = useSearchExchangeAmount()
 
-  const [inputValue, setInputValue] = useState(0)
-  const [outputValue, setOutputValue] = useState(0)
-
+  
   const [fresh, setFresh] = useState(true)
 
-  const [, setMinAmountFix] = useState(0)
   const [minAmountFloat, setMinAmountFloat] = useState(0)
-
-  const getExchangeAmount = async (from, to, amount) => {
-    const result = await changelly.getExchangeAmount([ {from, to, amount} ])
-    return result[0].result
-  }
-
-  // const searchAPI = text => fetch('/search?text=' + encodeURIComponent(text));
-  const getAmountDebounced = AwesomeDebouncePromise(getExchangeAmount, 1000);
 
   let handleFromCoinChange = (index, items) => {
     setSelectedFrom(index)
@@ -45,6 +72,7 @@ export default function Switch() {
     setFrom(_from)
 
     updateMinAmounts(_from, to)
+    search.execute(_from, to, amount)
   }
 
   let handleToCoinChange = (index, items) => {
@@ -52,19 +80,16 @@ export default function Switch() {
     let _to = currencies[index].name
     setTo(_to)
     updateMinAmounts(from, _to)
+    search.execute(from, _to, amount)
   }
 
   let handleAmountChange = async event => {
-    const amount = event.target.value
-    setInputValue(amount)
-    const amountIn = await getAmountDebounced(from, to, amount)
-    setOutputValue(amountIn)
+    setAmount(event.target.value)
   }
 
   let updateMinAmounts = (_from, _to) => {
     changelly.getPairsParams([{ from: _from, to: _to }]).then(pairParams => {
       const param = pairParams[0]
-      setMinAmountFix(param.minAmountFixed)
       setMinAmountFloat(param.minAmountFloat)
     })
   }
@@ -96,7 +121,7 @@ export default function Switch() {
               <Field label={`Amount (Min:${minAmountFloat})`} required>
                 <TextInput
                   type='number'
-                  value={inputValue}
+                  value={amount}
                   placeholder='asldkfja'
                   onChange={event => {
                     handleAmountChange(event)
@@ -134,7 +159,7 @@ export default function Switch() {
               <TextInput
                 type='number'
                 disabled
-                value={outputValue}
+                value={search.result || 0}
                 adornment={<img alt={`${to}`} src={`https://cryptoicons.org/api/icon/${to}/25`} />}
                 adornmentPosition='end'
               ></TextInput>

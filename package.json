@@ -11,10 +11,12 @@
     "babel-preset-react-app": "^9.1.0",
     "changelly-js": "^1.5.0",
     "react": "^16.12.0",
+    "react-async-hook": "^3.6.1",
     "react-dom": "^16.12.0",
     "react-scripts": "3.3.0",
     "styled-components": "^4.4.1",
-    "typeface-roboto": "0.0.75"
+    "typeface-roboto": "0.0.75",
+    "use-constant": "^1.0.0"
   },
   "homepage": "http://antoncoding.github.io/coin-exchange",
   "scripts": {
