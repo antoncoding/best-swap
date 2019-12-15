@@ -41,9 +41,9 @@ function App() {
         <DataView
             fields={['Account', 'Amount']}
             entries={[
-              { account: '1234', amount: '-7.900,33 ANT' },
-              { account: '4512', amount: '-8.760,90 ANT' },
-              { account: '12345', amount: '+5.321 ANT' },
+              { account: 'test1', amount: '-7.900,33 ANT' },
+              { account: 'test2', amount: '-8.760,90 ANT' },
+              { account: 'test3', amount: '+5.321 ANT' },
             ]}
             renderEntry={({ account, amount }) => {
               return [<IdentityBadge entity={account} />]

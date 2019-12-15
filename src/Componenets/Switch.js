@@ -135,8 +135,6 @@ export default function Switch() {
                   `}
                 ></div>
               </Field>
-
-              {/* <Field label='MinAmount'>{minAmountFloat}</Field> */}
             </>
           }
           secondary={
