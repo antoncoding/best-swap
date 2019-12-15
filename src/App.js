@@ -1,17 +1,11 @@
 import React, { useState } from 'react'
 
 import Switch from './Componenets/Switch'
+import Help from './Componenets/TokenHolderView'
 import { Main, Header, Tag, Button, IconPlus, SidePanel, Split, DataView, Box, IdentityBadge } from '@aragon/ui'
-
-// import { Changelly } from 'changelly-js'
 
 import './App.css'
 
-
-// const apiKey = process.env.REACT_APP_APIKey
-// const apiSecret = process.env.REACT_APP_APISecret
-
-// const changelly = new Changelly(apiKey, apiSecret)
 
 
 function App() {
@@ -61,18 +55,8 @@ function App() {
         }
       />
 
-      <SidePanel title='Add tokens' opened={sidePanelOpened} onClose={() => setSidePanelOpened(false)}>
-        <DataView
-            fields={['Account', 'Amount']}
-            entries={[
-              { account: '1234', amount: '-7.900,33 ANT' },
-              { account: '4512', amount: '-8.760,90 ANT' },
-              { account: '12345', amount: '+5.321 ANT' },
-            ]}
-            renderEntry={({ account, amount }) => {
-              return [<IdentityBadge entity={account} />]
-            }}
-          />
+      <SidePanel title='How does this work?' opened={sidePanelOpened} onClose={() => setSidePanelOpened(false)}>
+        <Help></Help>
       </SidePanel>
     </Main>
   )
