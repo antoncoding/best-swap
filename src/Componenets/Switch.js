@@ -1,8 +1,8 @@
-import React, { Component, useState } from 'react'
+import React, { useState } from 'react'
 
-// import { Button, FormControl, TextField, Grid } from '@material-ui/core'
+import AwesomeDebouncePromise from 'awesome-debounce-promise'
 
-import { DropDown, Button, Box, Split, IconArrowDown, TextInput, Field, IconRight, IconLeft } from '@aragon/ui'
+import { DropDown, Button, Box, Split, IconArrowDown, TextInput, Field, textStyle } from '@aragon/ui'
 
 // import { apiKey, apiSecret } from '../config'
 import { Changelly } from 'changelly-js'
@@ -11,6 +11,7 @@ const apiKey = process.env.REACT_APP_APIKey
 const apiSecret = process.env.REACT_APP_APISecret
 
 const changelly = new Changelly(apiKey, apiSecret)
+
 export default function Switch() {
   const [currencies, updateCurrencies] = useState([])
   const [currencyLabels, undateLabels] = useState([])
@@ -22,12 +23,20 @@ export default function Switch() {
   const [to, setTo] = useState('eth')
 
   const [inputValue, setInputValue] = useState(0)
-  const [outputValue, setoutputValue] = useState(0)
+  const [outputValue, setOutputValue] = useState(0)
 
   const [fresh, setFresh] = useState(true)
 
-  const [minAmountFix, setMinAmountFix] = useState(0)
+  const [, setMinAmountFix] = useState(0)
   const [minAmountFloat, setMinAmountFloat] = useState(0)
+
+  const getExchangeAmount = async (from, to, amount) => {
+    const result = await changelly.getExchangeAmount([ {from, to, amount} ])
+    return result[0].result
+  }
+
+  // const searchAPI = text => fetch('/search?text=' + encodeURIComponent(text));
+  const getAmountDebounced = AwesomeDebouncePromise(getExchangeAmount, 1000);
 
   let handleFromCoinChange = (index, items) => {
     setSelectedFrom(index)
@@ -45,18 +54,14 @@ export default function Switch() {
     updateMinAmounts(from, _to)
   }
 
-  let handleFromChange = event => {
+  let handleAmountChange = async event => {
     const amount = event.target.value
     setInputValue(amount)
-
-    changelly.getExchangeAmount({from, to, amount}).then(result => {
-    const exchangeAmount = result[0]
-    setoutputValue(exchangeAmount)
-    })
+    const amountIn = await getAmountDebounced(from, to, amount)
+    setOutputValue(amountIn)
   }
 
   let updateMinAmounts = (_from, _to) => {
-    console.log(`computing ${_from} tp ${_to}`)
     changelly.getPairsParams([{ from: _from, to: _to }]).then(pairParams => {
       const param = pairParams[0]
       setMinAmountFix(param.minAmountFixed)
@@ -71,7 +76,6 @@ export default function Switch() {
   if (fresh) {
     changelly.getCurrenciesFull().then(coins => {
       setFresh(false)
-
       let enabled = coins.filter(coin => coin.enabled)
       updateCurrencies(enabled)
 
@@ -80,7 +84,6 @@ export default function Switch() {
       })
       undateLabels(labels)
     })
-
     updateMinAmounts(from, to)
   }
 
@@ -90,19 +93,25 @@ export default function Switch() {
         <Split
           primary={
             <>
-              <Field label='Amount' required>
+              <Field label={`Amount (Min:${minAmountFloat})`} required>
                 <TextInput
                   type='number'
                   value={inputValue}
                   placeholder='asldkfja'
                   onChange={event => {
-                    handleFromChange(event)
+                    handleAmountChange(event)
                   }}
-                  adornment={<img src={`https://cryptoicons.org/api/icon/${from}/25`}/>}
+                  adornment={<img alt={`${from}`} src={`https://cryptoicons.org/api/icon/${from}/25`} />}
                   adornmentPosition='end'
                 ></TextInput>
+                <div
+                  css={`
+                    ${textStyle('title1')};
+                  `}
+                ></div>
               </Field>
-              <Field label='MinAmount'>{minAmountFloat}</Field>
+
+              {/* <Field label='MinAmount'>{minAmountFloat}</Field> */}
             </>
           }
           secondary={
@@ -126,7 +135,7 @@ export default function Switch() {
                 type='number'
                 disabled
                 value={outputValue}
-                adornment={<img src={`https://cryptoicons.org/api/icon/${to}/25`}/>}
+                adornment={<img alt={`${to}`} src={`https://cryptoicons.org/api/icon/${to}/25`} />}
                 adornmentPosition='end'
               ></TextInput>
             </Field>
