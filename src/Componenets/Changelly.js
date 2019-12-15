@@ -68,7 +68,7 @@ const useSearchExchangeAmount = () => {
   }
 }
 
-export default function Switch() {
+export default function ChangellyEx() {
   const [currencies, updateCurrencies] = useState([])
   const [currencyLabels, undateLabels] = useState([])
 
@@ -139,10 +139,11 @@ export default function Switch() {
   }
 
   return (
-    <>
+    <Split
+    primary={
+      <div>
       <Box>
         <Modal width={700} padding={40} visible={opened} onClose={() => setOpened(false)}>
-          <EmptyStateCard text='Confirm the Deal.' />
           <DataView
             fields={['field', 'data']}
             entries={[
@@ -213,6 +214,15 @@ export default function Switch() {
       <div style={{ padding: '20px', display: 'flex', justifyContent: 'center' }}>
         <Button onClick={handleExchange} label='Exchange' mode='strong' />
       </div>
-    </>
+    </div>
+    }
+
+    secondary = {
+      <div>
+        <EmptyStateCard text='Last Exchange Info' />
+        
+      </div>
+    }
+    />
   )
 }

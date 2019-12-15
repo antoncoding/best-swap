@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import Switch from './Componenets/Switch'
+import ChangellyEx from './Componenets/Changelly'
 import { Main, Header, Tag, Button, IconPlus, SidePanel, Split, DataView, IdentityBadge } from '@aragon/ui'
 
 import './App.css'
@@ -29,13 +29,13 @@ function App() {
           } />}
       />
 
-      <Split
+      {/* <Split
         primary={
-          <>
-            <Switch></Switch>
-          </>
+          <> */}
+            <ChangellyEx/>
+          {/* </>
         }
-      />
+      /> */}
     </Main>
   )
 }
