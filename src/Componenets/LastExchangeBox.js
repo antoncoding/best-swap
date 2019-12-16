@@ -1,18 +1,25 @@
 import React, { useState } from 'react'
 
-import { Table, TableHeader, TableRow, TableCell, Text, Button, Help, shortenAddress } from '@aragon/ui'
+import { 
+  Table, 
+  TableHeader, 
+  TableRow, 
+  TableCell, 
+  Text, 
+  IconRefresh, 
+  // Help, 
+  shortenAddress, 
+  Button
+} from '@aragon/ui'
 
 export default function LastExchange(tx_from, tx_to, tx_amount_from, tx_amount_to, tx_id, payinAddress, changelly) {
   const [status, setStatus] = useState('unkown')
 
-  // const getExchangeStatus = async () => {
-  //   const result = await changelly.getStatus(tx_id)
-  //   setStatus(result)
-  // }
+  const updateExchangeStatus = async () => {
+    const result = await changelly.getStatus(tx_id)
+    setStatus(result)
+  }
 
-  // setInterval(()=>{
-  //   if (tx_id !== '') getExchangeStatus()
-  // }, 20000)
 
   return (
     <>
@@ -69,8 +76,11 @@ export default function LastExchange(tx_from, tx_to, tx_amount_from, tx_amount_t
             <Text>Status</Text>
           </TableCell>
           <TableCell>
-            <Text>{status}</Text>
-            <Help hint="What are Ethereum addresses made of?">  Can't find the exchange </Help>
+            <Button 
+            onClick = {updateExchangeStatus}
+            icon={<IconRefresh/>} 
+            label={status}  />
+            {/* <Help hint="What are Ethereum addresses made of?">  Can't find the exchange </Help> */}
           </TableCell>
         </TableRow>
         
