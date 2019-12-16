@@ -1,7 +1,5 @@
-# My Own Coin Exchange
+# BestSwap
 
-Exchange coins with Changelly, ChangeNow and CionSwitch. Runing on [GitHub Page](https://antoncoding.github.io/coin-exchange/)
+BestSwap integrate with Changelly, CionSwitch, Change Hero to offer best swap for crypto. Runing on [GitHub Page](https://antoncoding.github.io/coin-exchange/)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-UI Design by [Aragon UI](https://github.com/aragon/aragon-ui);
+UI: Library designed by [Aragon UI](https://github.com/aragon/aragon-ui);
