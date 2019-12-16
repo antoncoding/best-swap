@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import ChangellyEx from './Componenets/Changelly'
-import { Main, Header, Button, IconPlus, SidePanel, textStyle, Box} from '@aragon/ui'
+import { Main, Header, Button, IconPlus, SidePanel, Box} from '@aragon/ui'
 import AragonUILogog from './aragonui-logo.png'
 import ChangellyLogo from './changelly-logo.png'
 import './App.css'

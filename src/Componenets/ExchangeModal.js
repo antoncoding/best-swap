@@ -1,9 +1,6 @@
 import React, { useState } from 'react'
 
 import { Modal, Button, Info, AddressField, IdentityBadge } from '@aragon/ui'
-import { Changelly } from 'changelly-js'
-
-// import { apiKey, apiSecret } from '../config'
 
 export default function ExchangeModal(
   from,
@@ -11,7 +8,7 @@ export default function ExchangeModal(
   amount,
   address,
   refundAddress,
-  changelly:Changelly,
+  changelly,
 
   update_tx_from,
   update_tx_to,

@@ -7,14 +7,7 @@ import AwesomeDebouncePromise from 'awesome-debounce-promise'
 import { useAsync } from 'react-async-hook'
 import useConstant from 'use-constant'
 
-import {
-  DropDown,
-  Box,
-  Split,
-  IconArrowDown,
-  TextInput,
-  Field,
-} from '@aragon/ui'
+import { DropDown, Box, Split, IconArrowDown, TextInput, Field } from '@aragon/ui'
 
 // import { apiKey, apiSecret } from '../config'
 import { Changelly } from 'changelly-js'
@@ -66,7 +59,6 @@ const useSearchExchangeAmount = () => {
 }
 
 export default function ChangellyEx() {
-  
   const [currencies, updateCurrencies] = useState([])
   const [currencyLabels, undateLabels] = useState([])
 
@@ -84,7 +76,7 @@ export default function ChangellyEx() {
 
   const [minAmountFloat, setMinAmountFloat] = useState(0)
 
-  // For last Exchange Info Box, only update with 
+  // For last Exchange Info Box, only update with
   const [tx_from, update_tx_from] = useState('')
   const [tx_to, update_tx_to] = useState('')
   const [tx_amount_from, update_tx_amount_from] = useState(0)
@@ -94,7 +86,6 @@ export default function ChangellyEx() {
   const [payinExtraId, update_payinExtraId] = useState('')
   const [tx_id, update_tx_id] = useState('')
   // const [extraId_name, update_ExtraIdName] = useState('')
-
 
   let handleFromCoinChange = (index, items) => {
     setSelectedFrom(index)
@@ -133,8 +124,6 @@ export default function ChangellyEx() {
     })
   }
 
-  
-
   if (fresh) {
     changelly.getCurrenciesFull().then(coins => {
       setFresh(false)
@@ -151,105 +140,110 @@ export default function ChangellyEx() {
 
   return (
     <Split
-    primary={
-      <div>
-      <Box>
-        
-        <Split
-          primary={
-            <>
-              <Field label={`Amount (Min:${minAmountFloat})`} required>
-                <TextInput
-                  type='number'
-                  value={amount}
-                  onChange={event => {
-                    handleAmountChange(event)
-                  }}
-                  adornment={<img alt={`${from}`} src={`https://cryptoicons.org/api/icon/${from}/25`} />}
-                  adornmentPosition='end'
-                ></TextInput>
-              </Field>
+      primary={
+        <div>
+          <div style={{ fontSize: 16, paddingBottom: 8, paddingLeft: '21px', paddingRight: 0, textAlign: 'left', color: '#637381' }}>
+            EXCHANGE
+          </div>
+          <Box>
+            <Split
+              primary={
+                <>
+                  <Field label={`Amount (Min:${minAmountFloat})`} required>
+                    <TextInput
+                      type='number'
+                      value={amount}
+                      onChange={event => {
+                        handleAmountChange(event)
+                      }}
+                      adornment={<img alt={`${from}`} src={`https://cryptoicons.org/api/icon/${from}/25`} />}
+                      adornmentPosition='end'
+                    ></TextInput>
+                  </Field>
 
-              <Field label='Refund Address'>
-                <TextInput required wide='true' onChange={handleRefundAddressChange} type='text' value={refundAddress}></TextInput>
-              </Field>
-            </>
-          }
-          secondary={
-            <>
-              <Field label='from'>
-                <DropDown items={currencyLabels} selected={selectedFrom} onChange={handleFromCoinChange} />
-              </Field>
-            </>
-          }
-        />
-      </Box>
+                  <Field label='Refund Address'>
+                    <TextInput
+                      required
+                      wide='true'
+                      onChange={handleRefundAddressChange}
+                      type='text'
+                      value={refundAddress}
+                    ></TextInput>
+                  </Field>
+                </>
+              }
+              secondary={
+                <>
+                  <Field label='from'>
+                    <DropDown items={currencyLabels} selected={selectedFrom} onChange={handleFromCoinChange} />
+                  </Field>
+                </>
+              }
+            />
+          </Box>
 
-      <div style={{ padding: '20px', display: 'flex', justifyContent: 'center' }}>
-        <IconArrowDown></IconArrowDown>
-      </div>
-      <Box>
-        <Split
-          primary={
-            <div>
-              <Field label='Amount'>
-                <TextInput
-                  type='number'
-                  disabled
-                  value={search.result || 0}
-                  adornment={<img alt={`${to}`} src={`https://cryptoicons.org/api/icon/${to}/25`} />}
-                  adornmentPosition='end'
-                ></TextInput>
-              </Field>
+          <div style={{ padding: '20px', display: 'flex', justifyContent: 'center' }}>
+            <IconArrowDown></IconArrowDown>
+          </div>
+          <Box>
+            <Split
+              primary={
+                <div>
+                  <Field label='Amount'>
+                    <TextInput
+                      type='number'
+                      disabled
+                      value={search.result || 0}
+                      adornment={<img alt={`${to}`} src={`https://cryptoicons.org/api/icon/${to}/25`} />}
+                      adornmentPosition='end'
+                    ></TextInput>
+                  </Field>
 
-              <Field label='Withdraw Address'>
-                <TextInput required wide='true' onChange={handleAddressChange} type='text' value={address}></TextInput>
-              </Field>
-            </div>
-          }
-          secondary={
-            <Field label='To'>
-              <DropDown items={currencyLabels} selected={selectedTo} onChange={handleToCoinChange} />
-            </Field>
-          }
-        ></Split>
-      </Box>
-      <div style={{ padding: '20px', display: 'flex', justifyContent: 'center' }}>
-        {ExchangeModal(
-          from, 
-          to, 
-          amount, 
-          address, 
-          refundAddress, 
-          changelly,
+                  <Field label='Withdraw Address'>
+                    <TextInput required wide='true' onChange={handleAddressChange} type='text' value={address}></TextInput>
+                  </Field>
+                </div>
+              }
+              secondary={
+                <Field label='To'>
+                  <DropDown items={currencyLabels} selected={selectedTo} onChange={handleToCoinChange} />
+                </Field>
+              }
+            ></Split>
+          </Box>
+          <div style={{ padding: '20px', display: 'flex', justifyContent: 'center' }}>
+            {ExchangeModal(
+              from,
+              to,
+              amount,
+              address,
+              refundAddress,
+              changelly,
 
-          update_tx_from,
-          update_tx_to,
-          update_tx_amount_from,
-          update_tx_amount_to,
-          update_tx_id,
-          update_payoutAddress,
-          update_payinAddress,
-          update_payinExtraId,
-          // update_ExtraIdName,
+              update_tx_from,
+              update_tx_to,
+              update_tx_amount_from,
+              update_tx_amount_to,
+              update_tx_id,
+              update_payoutAddress,
+              update_payinAddress,
+              update_payinExtraId,
+              // update_ExtraIdName,
 
-          payinAddress,
-          payoutAddress,
-          payinExtraId,
-          tx_from,
-          tx_to,
-          tx_amount_from,
-          tx_amount_to,
-          tx_id,
-          // extraId_name,
-          )}
-      </div>
-    </div>
-    }
-
-    secondary = {
-      LastExchangeBox(tx_from, tx_to, tx_amount_from, tx_amount_to, tx_id, payinAddress, changelly )
-    }
+              payinAddress,
+              payoutAddress,
+              payinExtraId,
+              tx_from,
+              tx_to,
+              tx_amount_from,
+              tx_amount_to,
+              tx_id
+              // extraId_name,
+            )}
+          </div>
+        </div>
+      }
+      secondary={LastExchangeBox(tx_from, tx_to, tx_amount_from, tx_amount_to, tx_id, payinAddress, changelly)}
     />
   )
 }
