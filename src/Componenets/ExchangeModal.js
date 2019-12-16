@@ -85,10 +85,14 @@ export default function ExchangeModal(
 
       <Modal  closeButton={false} width={800} padding={40} visible={opened} onClose={() => setOpened(false)}>
         <div style={{ padding: '20px', alignItems: 'center' }}>
-          <div style={{ fontSize: 16}} > Pay {tx_amount_from} {tx_from} to the following address:  </div>
+          <div style={{ fontSize: 14, paddingLeft:20 }} > Transaction Created: {tx_id}  </div>
+          <div style={{ fontSize: 24, padding:20 }} > Please send {tx_amount_from} {tx_from.toUpperCase()} to:  </div>
+          <div style={{ padding:20}}>
           <AddressField address={payinAddress}/>
-          <div style={{ fontSize: 15}}>You will receive {tx_amount_to} {tx_to} to the address: {payoutAddress} </div>
-          <IdentityBadge entity={payoutAddress}/>
+          </div>
+          
+          <div style={{ fontSize: 20, padding:20}}>We will send {tx_amount_to} {tx_to} to <IdentityBadge entity={payoutAddress}/> </div>
+          
         </div>
 
         <div style={{ fontSize: 16, padding: '20px', display: 'flex', alignContent: 'center' }}>
