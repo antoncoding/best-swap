@@ -1,18 +1,18 @@
 import React, { useState } from 'react'
 
-import { Table, TableHeader, TableRow, TableCell, Text, Button, Help, AddressField } from '@aragon/ui'
+import { Table, TableHeader, TableRow, TableCell, Text, Button, Help, shortenAddress } from '@aragon/ui'
 
 export default function LastExchange(tx_from, tx_to, tx_amount_from, tx_amount_to, tx_id, payinAddress, changelly) {
   const [status, setStatus] = useState('unkown')
 
-  const getExchangeStatus = async () => {
-    const result = await changelly.getStatus(tx_id)
-    setStatus(result)
-  }
+  // const getExchangeStatus = async () => {
+  //   const result = await changelly.getStatus(tx_id)
+  //   setStatus(result)
+  // }
 
-  setInterval(()=>{
-    if (tx_id !== '') getExchangeStatus()
-  }, 20000)
+  // setInterval(()=>{
+  //   if (tx_id !== '') getExchangeStatus()
+  // }, 20000)
 
   return (
     <>
@@ -34,7 +34,7 @@ export default function LastExchange(tx_from, tx_to, tx_amount_from, tx_amount_t
 
         <TableRow>
           <TableCell>
-            <Text>From</Text>
+            <Text>Transfer</Text>
           </TableCell>
           <TableCell>
             <Text>
@@ -45,16 +45,16 @@ export default function LastExchange(tx_from, tx_to, tx_amount_from, tx_amount_t
 
         <TableRow>
           <TableCell>
-            <Text>Pay To</Text>
+            <Text>To</Text>
           </TableCell>
           <TableCell>
-            <Text> {payinAddress} </Text>
+            <Text> {shortenAddress(payinAddress)} </Text>
           </TableCell>
         </TableRow>
 
         <TableRow>
           <TableCell>
-            <Text>To</Text>
+            <Text>You get</Text>
           </TableCell>
           <TableCell>
             <Text>

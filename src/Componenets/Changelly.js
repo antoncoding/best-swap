@@ -33,7 +33,7 @@ const useSearchExchangeAmount = () => {
   // Handle the input text state
   const [from, setFrom] = useState('btc')
   const [to, setTo] = useState('eth')
-  const [amount, setAmount] = useState(0)
+  const [amount, setAmount] = useState(3)
 
   // Debounce the original search async function
   const debouncedGetExchangeAmount = useConstant(() => AwesomeDebouncePromise(getExchangeAmount, 300))
@@ -73,8 +73,8 @@ export default function ChangellyEx() {
   const [selectedFrom, setSelectedFrom] = useState(0)
   const [selectedTo, setSelectedTo] = useState(1)
 
-  const [address, setAddress] = useState('')
-  const [refundAddress, setRefundAddress] = useState('')
+  const [address, setAddress] = useState('0xbAF99eD5b5663329FA417953007AFCC60f06F781')
+  const [refundAddress, setRefundAddress] = useState('bc1qjl8uwezzlech723lpnyuza0h2cdkvxvh54v3dn')
 
   const { from, setFrom, to, setTo, amount, setAmount, search } = useSearchExchangeAmount()
 
