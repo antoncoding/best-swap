@@ -66,6 +66,7 @@ const useSearchExchangeAmount = () => {
 }
 
 export default function ChangellyEx() {
+  
   const [currencies, updateCurrencies] = useState([])
   const [currencyLabels, undateLabels] = useState([])
 
@@ -80,6 +81,17 @@ export default function ChangellyEx() {
   const [fresh, setFresh] = useState(true)
 
   const [minAmountFloat, setMinAmountFloat] = useState(0)
+
+  // For last Exchange Info Box, only update with 
+  const [tx_from, update_tx_from] = useState('')
+  const [tx_to, update_tx_to] = useState('')
+  const [tx_amount_from, update_tx_amount_from] = useState(0)
+  const [tx_amount_to, update_tx_amount_to] = useState(0)
+  const [payinAddress, update_payinAddress] = useState('')
+  const [payoutAddress, update_payoutAddress] = useState('')
+  const [payinExtraId, update_payinExtraId] = useState('')
+  const [tx_id, update_tx_id] = useState('')
+  // const [extraId_name, update_ExtraIdName] = useState('')
 
 
   let handleFromCoinChange = (index, items) => {
@@ -201,13 +213,40 @@ export default function ChangellyEx() {
         ></Split>
       </Box>
       <div style={{ padding: '20px', display: 'flex', justifyContent: 'center' }}>
-        {ExchangeModal(from, to, amount, address, refundAddress, changelly)}
+        {ExchangeModal(
+          from, 
+          to, 
+          amount, 
+          address, 
+          refundAddress, 
+          changelly,
+
+          update_tx_from,
+          update_tx_to,
+          update_tx_amount_from,
+          update_tx_amount_to,
+          update_tx_id,
+          update_payoutAddress,
+          update_payinAddress,
+          update_payinExtraId,
+          // update_ExtraIdName,
+
+          payinAddress,
+          payoutAddress,
+          payinExtraId,
+          tx_from,
+          tx_to,
+          tx_amount_from,
+          tx_amount_to,
+          tx_id,
+          // extraId_name,
+          )}
       </div>
     </div>
     }
 
     secondary = {
-      LastExchangeBox(from, to, amount, search.result, 'akj1239dm10qk12m', changelly )
+      LastExchangeBox(tx_from, tx_to, tx_amount_from, tx_amount_to, tx_id, payinAddress, changelly )
     }
     />
   )

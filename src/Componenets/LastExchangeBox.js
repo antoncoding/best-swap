@@ -1,16 +1,18 @@
 import React, { useState } from 'react'
 
-import { Table, TableHeader, TableRow, TableCell, Text, Button, Help } from '@aragon/ui'
+import { Table, TableHeader, TableRow, TableCell, Text, Button, Help, AddressField } from '@aragon/ui'
 
-// import { apiKey, apiSecret } from '../config'
-
-export default function LastExchange(from, to, amount, exchangeAmount, id, changelly) {
+export default function LastExchange(tx_from, tx_to, tx_amount_from, tx_amount_to, tx_id, payinAddress, changelly) {
   const [status, setStatus] = useState('unkown')
 
-  const getExchangeStatus = async id => {
-    const result = await changelly.getExchangeStatus(id)
+  const getExchangeStatus = async () => {
+    const result = await changelly.getStatus(tx_id)
     setStatus(result)
   }
+
+  setInterval(()=>{
+    if (tx_id !== '') getExchangeStatus()
+  }, 20000)
 
   return (
     <>
@@ -26,7 +28,7 @@ export default function LastExchange(from, to, amount, exchangeAmount, id, chang
             <Text>Id</Text>
           </TableCell>
           <TableCell>
-            <Text>{id}</Text>
+            <Text>{tx_id}</Text>
           </TableCell>
         </TableRow>
 
@@ -36,8 +38,17 @@ export default function LastExchange(from, to, amount, exchangeAmount, id, chang
           </TableCell>
           <TableCell>
             <Text>
-              {amount} {from}
+              {tx_amount_from} {tx_from}
             </Text>
+          </TableCell>
+        </TableRow>
+
+        <TableRow>
+          <TableCell>
+            <Text>Pay To</Text>
+          </TableCell>
+          <TableCell>
+            <Text> {payinAddress} </Text>
           </TableCell>
         </TableRow>
 
@@ -48,7 +59,7 @@ export default function LastExchange(from, to, amount, exchangeAmount, id, chang
           <TableCell>
             <Text>
               {' '}
-              {exchangeAmount} {to}
+              {tx_amount_to} {tx_to}
             </Text>
           </TableCell>
         </TableRow>
