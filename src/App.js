@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
 
 import ChangellyEx from './Componenets/Changelly'
-import { Main, Header, Tag, Button, IconPlus, SidePanel,} from '@aragon/ui'
-
+import { Main, Header, Button, IconPlus, SidePanel, textStyle, Box} from '@aragon/ui'
+import AragonUILogog from './aragonui-logo.png'
+import ChangellyLogo from './changelly-logo.png'
 import './App.css'
 
 function App() {
   const [
-    // sidePanelOpened,
-    , 
+    sidePanelOpened,    
     setSidePanelOpened
   ] = useState(false)
 
@@ -17,8 +17,6 @@ function App() {
       <Header
         primary={
           <>
-            Coin Switch
-            <Tag mode='identifier'>Pro</Tag>
           </>
         }
         secondary={
@@ -34,6 +32,20 @@ function App() {
       />
 
       <ChangellyEx />
+
+      <SidePanel title="About BestSwap" 
+      opened={sidePanelOpened}
+      onClose={()=>setSidePanelOpened(false)}
+      >
+        <div style={{padding: 20, fontSize: 15}}> Partners </div>
+        <Box>
+          <img  width={300} src={AragonUILogog} alt='aragon-ui'></img>
+        </Box>
+        <Box>
+          <img  width={300} src={ChangellyLogo} alt='aragon-ui'></img>
+        </Box>
+         
+      </SidePanel>
     </Main>
   )
 }
