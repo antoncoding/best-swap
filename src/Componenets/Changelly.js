@@ -7,7 +7,7 @@ import AwesomeDebouncePromise from 'awesome-debounce-promise'
 import { useAsync } from 'react-async-hook'
 import useConstant from 'use-constant'
 
-import { DropDown, Box, Split, IconArrowDown, TextInput, Field } from '@aragon/ui'
+import { Box, Split, IconArrowDown, TextInput, Field, _AutoComplete as AutoComplete } from '@aragon/ui'
 
 // import { apiKey, apiSecret } from '../config'
 import { Changelly } from 'changelly-js'
@@ -60,11 +60,6 @@ const useSearchExchangeAmount = () => {
 
 export default function ChangellyEx() {
   const [currencies, updateCurrencies] = useState([])
-  const [currencyLabels, undateLabels] = useState([])
-
-  const [selectedFrom, setSelectedFrom] = useState(0)
-  const [selectedTo, setSelectedTo] = useState(1)
-
   const [address, setAddress] = useState('')
   const [refundAddress, setRefundAddress] = useState('')
   // const [address, setAddress] = useState('0xbAF99eD5b5663329FA417953007AFCC60f06F781')
@@ -87,19 +82,22 @@ export default function ChangellyEx() {
   const [tx_id, update_tx_id] = useState('')
   // const [extraId_name, update_ExtraIdName] = useState('')
 
-  let handleFromCoinChange = (index, items) => {
-    setSelectedFrom(index)
+  // Auto Complete search
+  const [searchTerm, setSearchTerm] = useState('')
+  const [toSearchTerm, setToSearchTerm] = useState('')
+  // const ref = useRef()
 
-    let _from = currencies[index].name
+  let handleFromCoinChange = label => {
+    setSearchTerm(label)
+    const _from = currencies.find(coin => coin.label === label).symbol
     setFrom(_from)
-
     updateMinAmounts(_from, to)
     search.execute(_from, to, amount)
   }
 
-  let handleToCoinChange = (index, items) => {
-    setSelectedTo(index)
-    let _to = currencies[index].name
+  let handleToCoinChange = label => {
+    setToSearchTerm(label)
+    const _to = currencies.find(coin => coin.label === label).symbol
     setTo(_to)
     updateMinAmounts(from, _to)
     search.execute(from, _to, amount)
@@ -128,12 +126,14 @@ export default function ChangellyEx() {
     changelly.getCurrenciesFull().then(coins => {
       setFresh(false)
       let enabled = coins.filter(coin => coin.enabled)
-      updateCurrencies(enabled)
 
-      let labels = enabled.map(coin => {
-        return `${coin.fullName} (${coin.name})`
+      let _currencies = enabled.map(coin => {
+        return {
+          symbol: coin.name,
+          label: `${coin.fullName} (${coin.name})`,
+        }
       })
-      undateLabels(labels)
+      updateCurrencies(_currencies)
     })
     updateMinAmounts(from, to)
   }
@@ -142,7 +142,9 @@ export default function ChangellyEx() {
     <Split
       primary={
         <div>
-          <div style={{ fontSize: 16, paddingBottom: 8, paddingLeft: '21px', paddingRight: 0, textAlign: 'left', color: '#637381' }}>
+          <div
+            style={{ fontSize: 16, paddingBottom: 8, paddingLeft: '21px', paddingRight: 0, textAlign: 'left', color: '#637381' }}
+          >
             EXCHANGE
           </div>
           <Box>
@@ -175,7 +177,20 @@ export default function ChangellyEx() {
               secondary={
                 <>
                   <Field label='from'>
-                    <DropDown items={currencyLabels} selected={selectedFrom} onChange={handleFromCoinChange} />
+                    {/* <DropDown items={currencyLabels} selected={selectedFrom} onChange={handleFromCoinChange} /> */}
+                    <AutoComplete
+                      items={currencies
+                        .filter(coin => {
+                          if (searchTerm) return coin.label.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1
+                          else return true
+                        })
+                        .map(coin => coin.label)}
+                      onChange={setSearchTerm}
+                      value={searchTerm}
+                      onSelect={handleFromCoinChange}
+                      // ref={ref}
+                      placeholder='Bitcoin'
+                    />
                   </Field>
                 </>
               }
@@ -206,7 +221,20 @@ export default function ChangellyEx() {
               }
               secondary={
                 <Field label='To'>
-                  <DropDown items={currencyLabels} selected={selectedTo} onChange={handleToCoinChange} />
+                  {/* <DropDown items={currencyLabels} selected={selectedTo} onChange={handleToCoinChange} /> */}
+                  <AutoComplete
+                    items={currencies
+                      .filter(coin => {
+                        if (toSearchTerm) return coin.label.toLowerCase().indexOf(toSearchTerm.toLowerCase()) > -1
+                        else return true
+                      })
+                      .map(coin => coin.label)}
+                    onChange={setToSearchTerm}
+                    value={toSearchTerm}
+                    onSelect={handleToCoinChange}
+                    // ref={ref}
+                    placeholder='Ethereum'
+                  />
                 </Field>
               }
             ></Split>
