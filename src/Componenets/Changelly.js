@@ -7,7 +7,14 @@ import AwesomeDebouncePromise from 'awesome-debounce-promise'
 import { useAsync } from 'react-async-hook'
 import useConstant from 'use-constant'
 
-import { Box, Split, IconArrowDown, TextInput, Field, _AutoComplete as AutoComplete } from '@aragon/ui'
+import {
+  Box,
+  Split,
+  IconArrowDown,
+  TextInput,
+  Field,
+  _AutoCompleteSelected as AutoCompleteSelected,
+} from '@aragon/ui'
 
 // import { apiKey, apiSecret } from '../config'
 import { Changelly } from 'changelly-js'
@@ -85,11 +92,17 @@ export default function ChangellyEx() {
   // Auto Complete search
   const [searchTerm, setSearchTerm] = useState('')
   const [toSearchTerm, setToSearchTerm] = useState('')
-  // const ref = useRef()
+
+  const [selectedFrom, setSelectedFrom] = useState({ symbol: 'btc', label: 'Bitcoin (btc)' })
+  const [selectedTo, setSelectedTo] = useState({ symbol: 'eth', label: 'Ethereum (eth)' })
 
   let handleFromCoinChange = label => {
     setSearchTerm(label)
-    const _from = currencies.find(coin => coin.label === label).symbol
+
+    const fromObj = currencies.find(coin => coin.label === label)
+    setSelectedFrom(fromObj)
+
+    const _from = fromObj.symbol
     setFrom(_from)
     updateMinAmounts(_from, to)
     search.execute(_from, to, amount)
@@ -97,7 +110,9 @@ export default function ChangellyEx() {
 
   let handleToCoinChange = label => {
     setToSearchTerm(label)
-    const _to = currencies.find(coin => coin.label === label).symbol
+    const toObj = currencies.find(coin => coin.label === label)
+    setSelectedTo(toObj)
+    const _to = toObj.symbol
     setTo(_to)
     updateMinAmounts(from, _to)
     search.execute(from, _to, amount)
@@ -158,7 +173,7 @@ export default function ChangellyEx() {
                       onChange={event => {
                         handleAmountChange(event)
                       }}
-                      adornment={<img alt={`${from}`} src={`https://cryptoicons.org/api/icon/${from}/25`} />}
+                      adornment={<img alt={`from`} src={`https://cryptoicons.org/api/icon/${from}/25`} />}
                       adornmentPosition='end'
                     ></TextInput>
                   </Field>
@@ -177,8 +192,7 @@ export default function ChangellyEx() {
               secondary={
                 <>
                   <Field label='from'>
-                    {/* <DropDown items={currencyLabels} selected={selectedFrom} onChange={handleFromCoinChange} /> */}
-                    <AutoComplete
+                    <AutoCompleteSelected
                       items={currencies
                         .filter(coin => {
                           if (searchTerm) return coin.label.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1
@@ -188,8 +202,13 @@ export default function ChangellyEx() {
                       onChange={setSearchTerm}
                       value={searchTerm}
                       onSelect={handleFromCoinChange}
-                      // ref={ref}
-                      placeholder='Bitcoin'
+                      renderSelected={x =>  <> {x.label} </> }
+                      selected={selectedFrom}
+                      onSelectedClick={() => {
+                        setSelectedFrom(null)
+                        setSearchTerm('')
+                      }}
+                      placeholder='Search To Show More'
                     />
                   </Field>
                 </>
@@ -221,18 +240,24 @@ export default function ChangellyEx() {
               }
               secondary={
                 <Field label='To'>
-                  {/* <DropDown items={currencyLabels} selected={selectedTo} onChange={handleToCoinChange} /> */}
-                  <AutoComplete
-                    items={currencies
-                      .filter(coin => {
-                        if (toSearchTerm) return coin.label.toLowerCase().indexOf(toSearchTerm.toLowerCase()) > -1
-                        else return true
-                      })
-                      .map(coin => coin.label)}
+                  <AutoCompleteSelected
+                    items={
+                      currencies
+                        .filter(coin => {
+                          if (toSearchTerm) return coin.label.toLowerCase().indexOf(toSearchTerm.toLowerCase()) > -1
+                          else return true
+                        })
+                        .map(coin => coin.label)
+                    }
                     onChange={setToSearchTerm}
                     value={toSearchTerm}
                     onSelect={handleToCoinChange}
-                    // ref={ref}
+                    renderSelected={x =>  <> {x.label} </> }
+                      selected={selectedTo}
+                      onSelectedClick={() => {
+                        setSelectedTo(null)
+                        setToSearchTerm('')
+                      }}
                     placeholder='Ethereum'
                   />
                 </Field>
