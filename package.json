@@ -18,7 +18,7 @@
     "typeface-roboto": "0.0.75",
     "use-constant": "^1.0.0"
   },
-  "homepage": "http://antoncoding.github.io/coin-exchange",
+  "homepage": "http://antoncoding.github.io/best-swap",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
