@@ -2,16 +2,23 @@ import { Changelly } from 'changelly-js'
 
 const apiKey = process.env.REACT_APP_APIKey
 const apiSecret = process.env.REACT_APP_APISecret
-
 const changelly = new Changelly(apiKey, apiSecret)
+
+const EXCHANGE_NAME = 'changelly'
 
 export const getExchangeAmount = async (from, to, amount, fix) => {
   if (!fix) {
     const result = await changelly.getExchangeAmount([{ from, to, amount }])
-    return { amount: Number(result[0].result), id: '' }
+    return { 
+      amount: Number(result[0].result), 
+      id: '', 
+      exchange: EXCHANGE_NAME }
   } else {
     const result = await changelly.getFixRateForAmount([{ from, to, amountFrom: amount }])
-    return { amount: Number(result[0].amountTo), id: result[0].id }
+    return { 
+      amount: Number(result[0].amountTo), 
+      id: result[0].id, 
+      exchange: EXCHANGE_NAME }
   }
 }
 
@@ -45,22 +52,12 @@ export const createTransaction = async (
   refundExtraId = null
 ) => {
   if (fix) {
-    return await changelly.createFixTransaction(
-      from,
-      to,
-      address,
-      rateId,
-      refundAddress,
-      amount,
-      null,
-      extraId,
-      refundExtraId
-    )
+    return await changelly.createFixTransaction(from, to, address, rateId, refundAddress, amount, null, extraId, refundExtraId)
   } else {
     return await changelly.createTransaction(from, to, address, amount, extraId, refundAddress, refundExtraId)
   }
 }
 
-export const getTransactionStatus = async (id) => {
-  return await changelly.getStatus(id);
+export const getTransactionStatus = async id => {
+  return await changelly.getStatus(id)
 }

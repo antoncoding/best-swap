@@ -7,13 +7,22 @@ import AwesomeDebouncePromise from 'awesome-debounce-promise'
 import { useAsync } from 'react-async-hook'
 import useConstant from 'use-constant'
 
-import { Box, Split, IconArrowDown, TextInput, Field, Switch, _AutoCompleteSelected as AutoCompleteSelected } from '@aragon/ui'
+import {
+  LoadingRing,
+  Box,
+  Split,
+  IconArrowDown,
+  TextInput,
+  Field,
+  Switch,
+  _AutoCompleteSelected as AutoCompleteSelected,
+} from '@aragon/ui'
 
 import { Changelly } from './Exchanges'
 
 import * as Aggregator from './Exchanges/aggregator'
 
-const getExchangeAmount = async (_from, _to, _amount, _fix) => {
+const getAggregateBestOffer = async (_from, _to, _amount, _fix) => {
   return await Aggregator.getBestOffer(_from, _to, _amount, _fix)
 }
 
@@ -22,34 +31,42 @@ const useSearchExchangeAmount = () => {
   const [from, setFrom] = useState('btc')
   const [to, setTo] = useState('eth')
   const [amount, setAmount] = useState(0)
+  const [fixed, setUseFix] = useState(false)
+  const [currentOffer, setCurrentOffer] = useState(null)
+  const [offers, setOffers] = useState([])
 
   // Debounce the original search async function
-  const debouncedGetExchangeAmountOnce = useConstant(() => AwesomeDebouncePromise(getExchangeAmount, 300))
+  const debouncedGetOffersOnce = useConstant(() => AwesomeDebouncePromise(getAggregateBestOffer, 300))
 
-  const debouncedGetExchangeAmount = useAsync(
+  const debouncedGetOffers = useAsync(
     async (from, to, amount, fix) => {
-      // If the input is empty, return nothing immediately (without the debouncing delay!)
-      if (from === to || amount === 0 ) {
-        return {amount: 0, id: ''}
-      }
-      // Else we use the debounced api
-      else {
-        return debouncedGetExchangeAmountOnce(from, to, amount, fix)
+      if (from !== to && amount !== 0) {
+        const { offers, bestOffer } = await debouncedGetOffersOnce(from, to, amount, fix)
+        setOffers(offers)
+        setCurrentOffer(bestOffer)
       }
     },
     // Ensure a new request is made everytime the text changes (even if it's debounced)
-    [from, to, amount]
+    [from, to, amount, fixed]
   )
 
   // Return everything needed for the hook consumer
   return {
+    debouncedGetOffers,
+
     from,
     to,
     amount,
+    fixed,
+    offers,
+    currentOffer,
+
+    setUseFix,
     setFrom,
     setTo,
     setAmount,
-    debouncedGetExchangeAmount,
+    setOffers,
+    setCurrentOffer,
   }
 }
 
@@ -60,7 +77,18 @@ export default function Main() {
   // const [address, setAddress] = useState('0xbAF99eD5b5663329FA417953007AFCC60f06F781')
   // const [refundAddress, setRefundAddress] = useState('bc1qjl8uwezzlech723lpnyuza0h2cdkvxvh54v3dn')
 
-  const { from, setFrom, to, setTo, amount, setAmount, debouncedGetExchangeAmount } = useSearchExchangeAmount()
+  const {
+    from,
+    setFrom,
+    to,
+    setTo,
+    amount,
+    setAmount,
+    debouncedGetOffers,
+    fixed,
+    setUseFix,
+    currentOffer,
+  } = useSearchExchangeAmount()
 
   const [fresh, setFresh] = useState(true)
 
@@ -77,7 +105,6 @@ export default function Main() {
   const [payinExtraId, update_payinExtraId] = useState('')
   const [tx_id, update_tx_id] = useState('')
   // const [extraId_name, update_ExtraIdName] = useState('')
-  const [fixed, setUseFix] = useState(false)
 
   // Auto Complete search
   const [searchTerm, setSearchTerm] = useState('')
@@ -86,12 +113,11 @@ export default function Main() {
   const [selectedFrom, setSelectedFrom] = useState({ symbol: 'btc', label: 'Bitcoin (btc)' })
   const [selectedTo, setSelectedTo] = useState({ symbol: 'eth', label: 'Ethereum (eth)' })
 
-  let handleSwitchFixRate = useFix => {
+  let handleSwitchFixRate = async useFix => {
     setUseFix(useFix)
-    debouncedGetExchangeAmount.execute(from, to, amount, useFix)
   }
 
-  let handleFromCoinChange = label => {
+  let handleFromCoinChange = async label => {
     setSearchTerm(label)
 
     const fromObj = currencies.find(coin => coin.label === label)
@@ -100,21 +126,20 @@ export default function Main() {
     const _from = fromObj.symbol
     setFrom(_from)
     updateMinAmounts(_from, to)
-    debouncedGetExchangeAmount.execute(_from, to, amount, fixed)
   }
 
-  let handleToCoinChange = label => {
+  let handleToCoinChange = async label => {
     setToSearchTerm(label)
     const toObj = currencies.find(coin => coin.label === label)
     setSelectedTo(toObj)
     const _to = toObj.symbol
     setTo(_to)
     updateMinAmounts(from, _to)
-    debouncedGetExchangeAmount.execute(from, _to, amount, fixed)
   }
 
   let handleAmountChange = async event => {
-    setAmount(event.target.value)
+    const _amount = event.target.value
+    setAmount(_amount)
   }
 
   const handleAddressChange = async event => {
@@ -219,10 +244,17 @@ export default function Main() {
                     <TextInput
                       type='number'
                       disabled
-                      value={ debouncedGetExchangeAmount.result ? debouncedGetExchangeAmount.result.amount : 0}
-                      adornment={<img alt={`${to}`} src={`https://cryptoicons.org/api/icon/${to}/25`} />}
+                      value={currentOffer ? currentOffer.amount : 0}
+                      adornment={
+                        debouncedGetOffers.loading ? (
+                          <LoadingRing />
+                        ) : (
+                          <img alt={`${to}`} src={`https://cryptoicons.org/api/icon/${to}/25`} />
+                        )
+                      }
                       adornmentPosition='end'
                     ></TextInput>
+                    {/* {debouncedGetOffers.loading && <LoadingRing></LoadingRing> } */}
                   </Field>
 
                   <Field label='Withdraw Address'>
@@ -257,14 +289,14 @@ export default function Main() {
           <div style={{ padding: '20px', display: 'flex', justifyContent: 'center' }}>
             {ExchangeModal(
               fixed,
-              debouncedGetExchangeAmount.result ? debouncedGetExchangeAmount.result.id : '',
+              currentOffer ? currentOffer.id : '',
               from,
               to,
               amount,
               address,
               refundAddress,
               null, // refundExtraId
-              'changelly',
+              currentOffer ? currentOffer.amount : 0,
 
               update_tx_from,
               update_tx_to,

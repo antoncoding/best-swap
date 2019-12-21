@@ -2,18 +2,24 @@ import * as Changelly from './Changelly/index'
 import * as CoinSwitch from './CoinSwitch/index'
 
 export const getBestOffer = async (from, to, amount, fix) => {
-  const [ changellyOffer, coinSwitchOffer ] = await Promise.all([
+  const offers = await Promise.all([
     Changelly.getExchangeAmount(from, to, amount, fix),
     CoinSwitch.getExchangeAmount(from, to, amount, fix)
   ])
-  // const changellyOffer = await 
-  // const coinSwitchOffer = await CoinSwitch.getExchangeAmount(from, to, amount, fix)
-  console.log(`comparing ${changellyOffer.amount} vs ${coinSwitchOffer.amount}`)
   
-  if (changellyOffer.amount > coinSwitchOffer.amount) return changellyOffer
-  else return coinSwitchOffer
+  let bestOffer = offers[0]
+  for(let offer of offers.slice(1)) {
+    if(offer.amount > bestOffer.amount)
+    bestOffer = offer
+  }
+  console.log(`Best offer found: ${JSON.stringify(bestOffer)}`)
+
+  return { offers, bestOffer }
 }
 
 export const getMinForPair = async (from, to) => {
-  
+  const [ changellyMinMax, coinSwitchMinMax ] = await Promise.all([
+    Changelly.getMinMaxForFloatAndFix(from, to)
+
+  ])
 }
