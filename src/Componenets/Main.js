@@ -7,26 +7,19 @@ import AwesomeDebouncePromise from 'awesome-debounce-promise'
 import { useAsync } from 'react-async-hook'
 import useConstant from 'use-constant'
 
-import {
-  Box,
-  Split,
-  IconArrowDown,
-  TextInput,
-  Field,
-  _AutoCompleteSelected as AutoCompleteSelected,
-} from '@aragon/ui'
+import { Box, Split, IconArrowDown, TextInput, Field, Switch, _AutoCompleteSelected as AutoCompleteSelected } from '@aragon/ui'
 
 // import { apiKey, apiSecret } from '../config'
 import { Changelly } from 'changelly-js'
 
+import * as MyChangelly from './ChangellyInterface'
+
 const apiKey = process.env.REACT_APP_APIKey
 const apiSecret = process.env.REACT_APP_APISecret
-
 const changelly = new Changelly(apiKey, apiSecret)
 
-const getExchangeAmount = async (_from, _to, _amount) => {
-  const result = await changelly.getExchangeAmount([{ from: _from, to: _to, amount: _amount }])
-  return result[0].result
+const getExchangeAmount = async (_from, _to, _amount, _fix) => {
+  return MyChangelly.getExchangeAmount(_from, _to, _amount, _fix)
 }
 
 const useSearchExchangeAmount = () => {
@@ -36,17 +29,18 @@ const useSearchExchangeAmount = () => {
   const [amount, setAmount] = useState(0)
 
   // Debounce the original search async function
-  const debouncedGetExchangeAmount = useConstant(() => AwesomeDebouncePromise(getExchangeAmount, 300))
+  const debouncedGetExchangeAmountOnce = useConstant(() => AwesomeDebouncePromise(getExchangeAmount, 300))
 
-  const search = useAsync(
-    async (from, to, amount) => {
+  const debouncedGetExchangeAmount = useAsync(
+    async (from, to, amount, fix) => {
       // If the input is empty, return nothing immediately (without the debouncing delay!)
       if (from === to) {
-        return [0]
+        console.log(`what up`)
+        return [ 0 ]
       }
       // Else we use the debounced api
       else {
-        return debouncedGetExchangeAmount(from, to, amount)
+        return debouncedGetExchangeAmountOnce(from, to, amount, fix)
       }
     },
     // Ensure a new request is made everytime the text changes (even if it's debounced)
@@ -61,7 +55,7 @@ const useSearchExchangeAmount = () => {
     setFrom,
     setTo,
     setAmount,
-    search,
+    debouncedGetExchangeAmount,
   }
 }
 
@@ -72,11 +66,12 @@ export default function ChangellyEx() {
   // const [address, setAddress] = useState('0xbAF99eD5b5663329FA417953007AFCC60f06F781')
   // const [refundAddress, setRefundAddress] = useState('bc1qjl8uwezzlech723lpnyuza0h2cdkvxvh54v3dn')
 
-  const { from, setFrom, to, setTo, amount, setAmount, search } = useSearchExchangeAmount()
+  const { from, setFrom, to, setTo, amount, setAmount, debouncedGetExchangeAmount } = useSearchExchangeAmount()
 
   const [fresh, setFresh] = useState(true)
 
   const [minAmountFloat, setMinAmountFloat] = useState(0)
+  const [minAmountFixed, setMinAmountFixed] = useState(0)
 
   // For last Exchange Info Box, only update with
   const [tx_from, update_tx_from] = useState('')
@@ -88,6 +83,7 @@ export default function ChangellyEx() {
   const [payinExtraId, update_payinExtraId] = useState('')
   const [tx_id, update_tx_id] = useState('')
   // const [extraId_name, update_ExtraIdName] = useState('')
+  const [fixed, setUseFix] = useState(false)
 
   // Auto Complete search
   const [searchTerm, setSearchTerm] = useState('')
@@ -95,6 +91,12 @@ export default function ChangellyEx() {
 
   const [selectedFrom, setSelectedFrom] = useState({ symbol: 'btc', label: 'Bitcoin (btc)' })
   const [selectedTo, setSelectedTo] = useState({ symbol: 'eth', label: 'Ethereum (eth)' })
+
+  let handleSwitchFixRate = useFix => {
+    setUseFix(useFix)
+    debouncedGetExchangeAmount.execute(from, to, amount, useFix)
+    // getExchangeAmount(from, to, amount, useFix)
+  }
 
   let handleFromCoinChange = label => {
     setSearchTerm(label)
@@ -105,7 +107,7 @@ export default function ChangellyEx() {
     const _from = fromObj.symbol
     setFrom(_from)
     updateMinAmounts(_from, to)
-    search.execute(_from, to, amount)
+    debouncedGetExchangeAmount.execute(_from, to, amount, fixed)
   }
 
   let handleToCoinChange = label => {
@@ -115,7 +117,7 @@ export default function ChangellyEx() {
     const _to = toObj.symbol
     setTo(_to)
     updateMinAmounts(from, _to)
-    search.execute(from, _to, amount)
+    debouncedGetExchangeAmount.execute(from, _to, amount, fixed)
   }
 
   let handleAmountChange = async event => {
@@ -130,24 +132,15 @@ export default function ChangellyEx() {
     setRefundAddress(event.target.value)
   }
 
-  let updateMinAmounts = (_from, _to) => {
-    changelly.getPairsParams([{ from: _from, to: _to }]).then(pairParams => {
-      const param = pairParams[0]
-      setMinAmountFloat(param.minAmountFloat)
-    })
+  let updateMinAmounts = async (_from, _to) => {
+    const { minAmountFixed, minAmountFloat } = await MyChangelly.getMinForFloatAndFix(_from, _to)
+    setMinAmountFloat(minAmountFloat)
+    setMinAmountFixed(minAmountFixed)
   }
 
   if (fresh) {
-    changelly.getCurrenciesFull().then(coins => {
+    MyChangelly.getCurrenciesSymbolAndLabel().then(_currencies => {
       setFresh(false)
-      let enabled = coins.filter(coin => coin.enabled)
-
-      let _currencies = enabled.map(coin => {
-        return {
-          symbol: coin.name,
-          label: `${coin.fullName} (${coin.name})`,
-        }
-      })
       updateCurrencies(_currencies)
     })
     updateMinAmounts(from, to)
@@ -166,7 +159,7 @@ export default function ChangellyEx() {
             <Split
               primary={
                 <>
-                  <Field label={`Amount (Min:${minAmountFloat})`} required>
+                  <Field label={`Amount (Min:${fixed ? minAmountFixed : minAmountFloat})`} required>
                     <TextInput
                       type='number'
                       value={amount}
@@ -202,7 +195,7 @@ export default function ChangellyEx() {
                       onChange={setSearchTerm}
                       value={searchTerm}
                       onSelect={handleFromCoinChange}
-                      renderSelected={x =>  <> {x.label} </> }
+                      renderSelected={x => <> {x.label} </>}
                       selected={selectedFrom}
                       onSelectedClick={() => {
                         setSelectedFrom(null)
@@ -219,7 +212,13 @@ export default function ChangellyEx() {
           <div style={{ padding: '20px', display: 'flex', justifyContent: 'center' }}>
             <IconArrowDown></IconArrowDown>
           </div>
+
           <Box>
+            {/* <span style={{ fontSize: 12, marginBottom: 10, textAlign: 'left', color: '#637381' }}></span> */}
+            <div style={{ fontSize: 12, textAlign: 'right', color: '#637381' }}>Fix Rate</div>
+            <div style={{ textAlign: 'right', color: '#637381' }}>
+              <Switch checked={fixed} onChange={handleSwitchFixRate} />
+            </div>
             <Split
               primary={
                 <div>
@@ -227,7 +226,7 @@ export default function ChangellyEx() {
                     <TextInput
                       type='number'
                       disabled
-                      value={search.result || 0}
+                      value={ debouncedGetExchangeAmount.result ? debouncedGetExchangeAmount.result.amount : 0}
                       adornment={<img alt={`${to}`} src={`https://cryptoicons.org/api/icon/${to}/25`} />}
                       adornmentPosition='end'
                     ></TextInput>
@@ -241,23 +240,21 @@ export default function ChangellyEx() {
               secondary={
                 <Field label='To'>
                   <AutoCompleteSelected
-                    items={
-                      currencies
-                        .filter(coin => {
-                          if (toSearchTerm) return coin.label.toLowerCase().indexOf(toSearchTerm.toLowerCase()) > -1
-                          else return true
-                        })
-                        .map(coin => coin.label)
-                    }
+                    items={currencies
+                      .filter(coin => {
+                        if (toSearchTerm) return coin.label.toLowerCase().indexOf(toSearchTerm.toLowerCase()) > -1
+                        else return true
+                      })
+                      .map(coin => coin.label)}
                     onChange={setToSearchTerm}
                     value={toSearchTerm}
                     onSelect={handleToCoinChange}
-                    renderSelected={x =>  <> {x.label} </> }
-                      selected={selectedTo}
-                      onSelectedClick={() => {
-                        setSelectedTo(null)
-                        setToSearchTerm('')
-                      }}
+                    renderSelected={x => <> {x.label} </>}
+                    selected={selectedTo}
+                    onSelectedClick={() => {
+                      setSelectedTo(null)
+                      setToSearchTerm('')
+                    }}
                     placeholder='Ethereum'
                   />
                 </Field>
@@ -266,12 +263,15 @@ export default function ChangellyEx() {
           </Box>
           <div style={{ padding: '20px', display: 'flex', justifyContent: 'center' }}>
             {ExchangeModal(
+              fixed,
+              debouncedGetExchangeAmount.result ? debouncedGetExchangeAmount.result.id : '',
               from,
               to,
               amount,
               address,
               refundAddress,
-              changelly,
+              null, // refundExtraId
+              'changelly',
 
               update_tx_from,
               update_tx_to,

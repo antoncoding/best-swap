@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import ChangellyEx from './Componenets/Changelly'
+import Exchange from './Componenets/Main'
 import { Main, Header, Button, IconPlus, SidePanel, Box } from '@aragon/ui'
 import AragonUILogog from './aragonui-logo.png'
 import ChangellyLogo from './changelly-logo.png'
@@ -25,7 +25,7 @@ function App() {
         }
       />
 
-      <ChangellyEx />
+      <Exchange />
 
       <SidePanel title='About BestSwap' opened={sidePanelOpened} onClose={() => setSidePanelOpened(false)}>
         <div style={{ padding: 20, fontSize: 15 }}> Powered By </div>
