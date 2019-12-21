@@ -14,14 +14,13 @@ import {
   Box,
   Split,
   IconArrowDown,
-  IconArrowRight,
+  // IconArrowRight,
   IconLock,
   IconUnlock,
   TextInput,
   Field,
-  Switch,
   _AutoCompleteSelected as AutoCompleteSelected,
-  Button,
+  // Button,
 } from '@aragon/ui'
 
 import { Changelly } from './Exchanges'
@@ -91,6 +90,7 @@ export default function Main() {
     amount,
     setAmount,
     debouncedGetOffers,
+    setCurrentOffer,
     offers,
     fixed,
     setUseFix,
@@ -121,10 +121,7 @@ export default function Main() {
 
   const [selectedFrom, setSelectedFrom] = useState({ symbol: 'btc', label: 'Bitcoin (btc)' })
   const [selectedTo, setSelectedTo] = useState({ symbol: 'eth', label: 'Ethereum (eth)' })
-
-  let handleSwitchFixRate = async useFix => {
-    setUseFix(useFix)
-  }
+  const [selectedOfferIndex, setOfferIndex] = useState(0);
 
   let handleFromCoinChange = async label => {
     setSearchTerm(label)
@@ -182,9 +179,6 @@ export default function Main() {
           >
             You Send
           </div>
-
-          {/* <div> */}
-
           <Box>
             <Split
               primary={
@@ -196,8 +190,6 @@ export default function Main() {
                       onChange={event => {
                         handleAmountChange(event)
                       }}
-                      // adornment={}
-                      // adornmentPosition='end'
                     ></TextInput>
                   </Field>
 
@@ -262,33 +254,28 @@ export default function Main() {
               primary={
                 <div>
                   <Field label='Offers'>
-                    {/* <TextInput
-                      type='number'
-                      disabled
-                      value={currentOffer ? currentOffer.amount : 0}
-                      adornment={
-                        debouncedGetOffers.loading ? (
-                          <LoadingRing />
-                        ) : (
-                          <img alt={`${to}`} src={`https://cryptoicons.org/api/icon/${to}/25`} />
-                        )
-                      }
-                      adornmentPosition='end'
-                    ></TextInput> */}
                     {debouncedGetOffers.loading ? (
                       <LoadingRing />
                     ) : (
                       <RadioList
+                        onChange={(index) => {
+                          console.log(`setting index ${index}`)
+                          setOfferIndex(index)
+                          setCurrentOffer(offers[index])
+                        }}
+                        selected={selectedOfferIndex}
                         items={
                           offers.length > 0
                             ? offers.map(offer => {
-                                return offer.error ?
-                                { title: `${offer.amount} ${to.toUpperCase()}`,
-                                  description: `${offer.exchange}:  ${offer.error}` } : 
-                                { 
-                                  title: `${offer.amount} ${to.toUpperCase()}`,
-                                  description: `${offer.exchange}` 
-                                }
+                                return offer.error
+                                  ? {
+                                      title: `${offer.amount} ${to.toUpperCase()}`,
+                                      description: `${offer.exchange}:  ${offer.error}`,
+                                    }
+                                  : {
+                                      title: `${offer.amount} ${to.toUpperCase()}`,
+                                      description: `${offer.exchange}`,
+                                    }
                               })
                             : [{ description: `No ${fixed ? 'fix rate' : 'float rate'} offers ` }]
                         }
@@ -328,14 +315,14 @@ export default function Main() {
           <div style={{ padding: '20px', display: 'flex', justifyContent: 'center' }}>
             {ExchangeModal(
               fixed,
-              currentOffer ? currentOffer.id : '',
+              offers.length !== 0 ? offers[selectedOfferIndex].id : '', // currentOffer ? currentOffer.id : '',
               from,
               to,
               amount,
               address,
               refundAddress,
               null, // refundExtraId
-              currentOffer ? currentOffer.exchange : '',
+              offers.length !== 0 ? offers[selectedOfferIndex].exchange : '', // currentOffer ? currentOffer.exchange : '',
 
               updateTransaction,
               transaction

@@ -83,7 +83,7 @@ export const getFixedRates = async params => {
   const { depositCoinAmount, destinationCoinAmount } = params
   if ((!depositCoinAmount && !destinationCoinAmount) || (depositCoinAmount && destinationCoinAmount))
     throw new Error('Only specify one of depositCoinAmount or destinationCoinAmount')
-  const offer = await requestCoinSwitch('fixed/rates', 'POST', params)
+  const offer = await requestCoinSwitch('fixed/offer', 'POST', params)
   return offer
 }
 
