@@ -15,25 +15,8 @@ export default function ExchangeModal(
   refundExtraId,
   exchangeName,
 
-  update_tx_from,
-  update_tx_to,
-  update_tx_amount_from,
-  update_tx_amount_to,
-  update_tx_id,
-  update_payoutAddress,
-  update_payinAddress,
-  update_payinExtraId,
-  // update_ExtraIdName,
-
-  payinAddress,
-  payoutAddress,
-  payinExtraId,
-  tx_from,
-  tx_to,
-  tx_amount_from,
-  tx_amount_to,
-  tx_id
-  // extraId_name,
+  updateTransaction,
+  transaction
 ) {
   // for Exchange panel
   const [opened, setOpened] = useState(false)
@@ -48,7 +31,7 @@ export default function ExchangeModal(
       try {
         switch (exchangeName) {
           case 'changelly': {
-            const result = await Changelly.createTransaction(
+            const transaction = await Changelly.createTransaction(
               fixed,
               fixRateId,
               from,
@@ -59,33 +42,17 @@ export default function ExchangeModal(
               refundAddress,
               refundExtraId
             )
-            // const result = {
-            //   currencyFrom: from,
-            //   currencyTo: to,
-            //   amountExpectedFrom: amount,
-            //   amountExpectedTo: '150.2314098712',
-            //   id: '123412341234',
-            //   payinAddress: 'bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej',
-            //   payoutAddress: address,
-            //   refundAddress: refundAddress,
-            //   payinExtraId: null,
-            // }
-            console.log(result)
+
+            transaction.exchange = 'changelly'
+            // console.log(transaction)
 
             setOpened(true)
-            update_tx_from(result.currencyFrom)
-            update_tx_to(result.currencyTo)
-            update_tx_amount_from(result.amountExpectedFrom)
-            update_tx_amount_to(result.amountExpectedTo)
-            update_tx_id(result.id)
-            update_payoutAddress(result.payoutAddress)
-            update_payinAddress(result.payinAddress)
-            update_payinExtraId(result.payinExtraId)
+            updateTransaction(transaction)
             break
           }
 
           default: {
-            console.error('no exchagne?')
+            throw new Error(`${exchangeName} transaction not supported yet`);
           }
         }
 
@@ -104,17 +71,17 @@ export default function ExchangeModal(
 
       <Modal closeButton={false} width={800} padding={40} visible={opened} onClose={() => setOpened(false)}>
         <div style={{ padding: '20px', alignItems: 'center' }}>
-          <div style={{ fontSize: 14, paddingLeft: 20 }}> Transaction Created: {tx_id} </div>
+          <div style={{ fontSize: 14, paddingLeft: 20 }}> Transaction Created: {transaction.id} </div>
           <div style={{ fontSize: 24, padding: 20 }}>
             {' '}
-            Please send {tx_amount_from} {tx_from.toUpperCase()} to:{' '}
+            Please send {transaction.amountFrom} {transaction.from.toUpperCase()} to:{' '}
           </div>
           <div style={{ padding: 20 }}>
-            <AddressField address={payinAddress} />
+            <AddressField address={transaction.payinAddress} />
           </div>
 
           <div style={{ fontSize: 20, padding: 20 }}>
-            We will send {tx_amount_to} {tx_to} to <IdentityBadge entity={payoutAddress} />{' '}
+            We will send {transaction.amountTo} {transaction.to} to <IdentityBadge entity={transaction.payoutAddress} />{' '}
           </div>
         </div>
 

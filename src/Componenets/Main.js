@@ -72,10 +72,10 @@ const useSearchExchangeAmount = () => {
 
 export default function Main() {
   const [currencies, updateCurrencies] = useState([])
-  const [address, setAddress] = useState('')
-  const [refundAddress, setRefundAddress] = useState('')
-  // const [address, setAddress] = useState('0xbAF99eD5b5663329FA417953007AFCC60f06F781')
-  // const [refundAddress, setRefundAddress] = useState('bc1qjl8uwezzlech723lpnyuza0h2cdkvxvh54v3dn')
+  // const [address, setAddress] = useState('')
+  // const [refundAddress, setRefundAddress] = useState('')
+  const [address, setAddress] = useState('0xbAF99eD5b5663329FA417953007AFCC60f06F781')
+  const [refundAddress, setRefundAddress] = useState('bc1qjl8uwezzlech723lpnyuza0h2cdkvxvh54v3dn')
 
   const {
     from,
@@ -96,16 +96,18 @@ export default function Main() {
   const [minAmountFixed, setMinAmountFixed] = useState(0)
 
   // For last Exchange Info Box, only update with
-  const [tx_from, update_tx_from] = useState('')
-  const [tx_to, update_tx_to] = useState('')
-  const [tx_amount_from, update_tx_amount_from] = useState(0)
-  const [tx_amount_to, update_tx_amount_to] = useState(0)
-  const [payinAddress, update_payinAddress] = useState('')
-  const [payoutAddress, update_payoutAddress] = useState('')
-  const [payinExtraId, update_payinExtraId] = useState('')
-  const [tx_id, update_tx_id] = useState('')
-  // const [extraId_name, update_ExtraIdName] = useState('')
-
+  const [transaction, updateTransaction] = useState({
+    from:'',
+    to:'',
+    amountFrom: 0,
+    amountTo: 0,
+    payinAddress: '',
+    payoutAddress: '',
+    payinExtraId: '',
+    id: '',
+    exchange:'unkown'
+  })
+  
   // Auto Complete search
   const [searchTerm, setSearchTerm] = useState('')
   const [toSearchTerm, setToSearchTerm] = useState('')
@@ -296,32 +298,15 @@ export default function Main() {
               address,
               refundAddress,
               null, // refundExtraId
-              currentOffer ? currentOffer.amount : 0,
+              currentOffer ? currentOffer.exchange : '',
 
-              update_tx_from,
-              update_tx_to,
-              update_tx_amount_from,
-              update_tx_amount_to,
-              update_tx_id,
-              update_payoutAddress,
-              update_payinAddress,
-              update_payinExtraId,
-              // update_ExtraIdName,
-
-              payinAddress,
-              payoutAddress,
-              payinExtraId,
-              tx_from,
-              tx_to,
-              tx_amount_from,
-              tx_amount_to,
-              tx_id
-              // extraId_name,
+              updateTransaction,
+              transaction
             )}
           </div>
         </div>
       }
-      secondary={LastExchangeBox(tx_from, tx_to, tx_amount_from, tx_amount_to, tx_id, payinAddress, 'changelly')}
+      secondary={LastExchangeBox(transaction)}
     />
   )
 }

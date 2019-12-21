@@ -9,16 +9,18 @@ const EXCHANGE_NAME = 'changelly'
 export const getExchangeAmount = async (from, to, amount, fix) => {
   if (!fix) {
     const result = await changelly.getExchangeAmount([{ from, to, amount }])
-    return { 
-      amount: Number(result[0].result), 
-      id: '', 
-      exchange: EXCHANGE_NAME }
+    return {
+      amount: Number(result[0].result),
+      id: '',
+      exchange: EXCHANGE_NAME,
+    }
   } else {
     const result = await changelly.getFixRateForAmount([{ from, to, amountFrom: amount }])
-    return { 
-      amount: Number(result[0].amountTo), 
-      id: result[0].id, 
-      exchange: EXCHANGE_NAME }
+    return {
+      amount: Number(result[0].amountTo),
+      id: result[0].id,
+      exchange: EXCHANGE_NAME,
+    }
   }
 }
 
@@ -52,9 +54,51 @@ export const createTransaction = async (
   refundExtraId = null
 ) => {
   if (fix) {
-    return await changelly.createFixTransaction(from, to, address, rateId, refundAddress, amount, null, extraId, refundExtraId)
+    const tx = await changelly.createFixTransaction(
+      from,
+      to,
+      address,
+      rateId,
+      refundAddress,
+      amount,
+      null,
+      extraId,
+      refundExtraId
+    )
+    return {
+      from: tx.currencyFrom,
+      to: tx.currencyTo,
+      amountFrom: tx.amountExpectedFrom,
+      amountTo: tx.amountExpectedTo,
+      id: tx.id,
+      payoutAddress: tx.payoutAddress,
+      payinAddress: tx.payinAddress,
+      payinExtraId: tx.payinExtraId,
+      expiration: tx.payTill,
+    }
   } else {
-    return await changelly.createTransaction(from, to, address, amount, extraId, refundAddress, refundExtraId)
+    const tx = await changelly.createTransaction(from, to, address, amount, extraId, refundAddress, refundExtraId)
+    // const tx = {
+    //   currencyFrom: from,
+    //   currencyTo: to,
+    //   amountExpectedFrom: amount,
+    //   amountExpectedTo: '150.2314098712',
+    //   id: '123412341234',
+    //   payinAddress: 'bc1qwqdg6squsna38e46795at95yu9atm8azzmyvckulcc7kytlcckxswvvzej',
+    //   payoutAddress: address,
+    //   refundAddress: refundAddress,
+    //   payinExtraId: null,
+    // }
+    return {
+      from: tx.currencyFrom,
+      to: tx.currencyTo,
+      amountFrom: tx.amountExpectedFrom,
+      amountTo: tx.amountExpectedTo,
+      id: tx.id,
+      payoutAddress: tx.payoutAddress,
+      payinAddress: tx.payinAddress,
+      payinExtraId: tx.payinExtraId,
+    }
   }
 }
 

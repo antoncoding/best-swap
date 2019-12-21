@@ -13,13 +13,13 @@ import {
 
 import { Changelly } from './Exchanges';
 
-export default function LastExchange(tx_from, tx_to, tx_amount_from, tx_amount_to, tx_id, payinAddress, exchangeName) {
+export default function LastExchange(transaction) {
   const [status, setStatus] = useState('unkown')
 
   const updateExchangeStatus = async () => {
-    switch (exchangeName) {
+    switch (transaction.exchange) {
       case 'changelly': {
-        const result = await Changelly.getTransactionStatus(tx_id)
+        const result = await Changelly.getTransactionStatus(transaction.id)
         setStatus(result)
         break;
       }
@@ -45,7 +45,7 @@ export default function LastExchange(tx_from, tx_to, tx_amount_from, tx_amount_t
             <Text>Id</Text>
           </TableCell>
           <TableCell>
-            <Text>{tx_id}</Text>
+            <Text>{transaction.id}</Text>
           </TableCell>
         </TableRow>
 
@@ -55,7 +55,7 @@ export default function LastExchange(tx_from, tx_to, tx_amount_from, tx_amount_t
           </TableCell>
           <TableCell>
             <Text>
-              {tx_amount_from} {tx_from}
+              {transaction.amountFrom} {transaction.from}
             </Text>
           </TableCell>
         </TableRow>
@@ -65,7 +65,7 @@ export default function LastExchange(tx_from, tx_to, tx_amount_from, tx_amount_t
             <Text>To</Text>
           </TableCell>
           <TableCell>
-            <Text> {shortenAddress(payinAddress)} </Text>
+            <Text> {shortenAddress(transaction.payinAddress)} </Text>
           </TableCell>
         </TableRow>
 
@@ -76,7 +76,7 @@ export default function LastExchange(tx_from, tx_to, tx_amount_from, tx_amount_t
           <TableCell>
             <Text>
               {' '}
-              {tx_amount_to} {tx_to}
+              {transaction.amountTo} {transaction.to}
             </Text>
           </TableCell>
         </TableRow>
