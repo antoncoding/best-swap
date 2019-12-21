@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { Modal, Button, Info, AddressField, IdentityBadge } from '@aragon/ui'
 
-import * as Changelly from './ChangellyInterface'
+import { Changelly } from './Exchanges/'
 
 export default function ExchangeModal(
   fixed,

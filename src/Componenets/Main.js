@@ -9,10 +9,10 @@ import useConstant from 'use-constant'
 
 import { Box, Split, IconArrowDown, TextInput, Field, Switch, _AutoCompleteSelected as AutoCompleteSelected } from '@aragon/ui'
 
-import * as MyChangelly from './ChangellyInterface'
+import { Changelly } from './Exchanges'
 
 const getExchangeAmount = async (_from, _to, _amount, _fix) => {
-  return MyChangelly.getExchangeAmount(_from, _to, _amount, _fix)
+  return Changelly.getExchangeAmount(_from, _to, _amount, _fix)
 }
 
 const useSearchExchangeAmount = () => {
@@ -52,7 +52,7 @@ const useSearchExchangeAmount = () => {
   }
 }
 
-export default function ChangellyEx() {
+export default function Main() {
   const [currencies, updateCurrencies] = useState([])
   const [address, setAddress] = useState('')
   const [refundAddress, setRefundAddress] = useState('')
@@ -126,13 +126,13 @@ export default function ChangellyEx() {
   }
 
   let updateMinAmounts = async (_from, _to) => {
-    const { minAmountFixed, minAmountFloat } = await MyChangelly.getMinForFloatAndFix(_from, _to)
+    const { minAmountFixed, minAmountFloat } = await Changelly.getMinForFloatAndFix(_from, _to)
     setMinAmountFloat(minAmountFloat)
     setMinAmountFixed(minAmountFixed)
   }
 
   if (fresh) {
-    MyChangelly.getCurrenciesSymbolAndLabel().then(_currencies => {
+    Changelly.getCurrenciesSymbolAndLabel().then(_currencies => {
       setFresh(false)
       updateCurrencies(_currencies)
     })
