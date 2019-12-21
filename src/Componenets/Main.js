@@ -8,14 +8,19 @@ import { useAsync } from 'react-async-hook'
 import useConstant from 'use-constant'
 
 import {
+  RadioList,
   LoadingRing,
+  LinkBase,
   Box,
   Split,
-  IconArrowDown,
+  IconArrowRight,
+  IconLock,
+  IconUnlock,
   TextInput,
   Field,
   Switch,
   _AutoCompleteSelected as AutoCompleteSelected,
+  Button,
 } from '@aragon/ui'
 
 import { Changelly } from './Exchanges'
@@ -85,6 +90,7 @@ export default function Main() {
     amount,
     setAmount,
     debouncedGetOffers,
+    offers,
     fixed,
     setUseFix,
     currentOffer,
@@ -97,17 +103,17 @@ export default function Main() {
 
   // For last Exchange Info Box, only update with
   const [transaction, updateTransaction] = useState({
-    from:'',
-    to:'',
+    from: '',
+    to: '',
     amountFrom: 0,
     amountTo: 0,
     payinAddress: '',
     payoutAddress: '',
     payinExtraId: '',
     id: '',
-    exchange:'unkown'
+    exchange: 'unkown',
   })
-  
+
   // Auto Complete search
   const [searchTerm, setSearchTerm] = useState('')
   const [toSearchTerm, setToSearchTerm] = useState('')
@@ -173,8 +179,11 @@ export default function Main() {
           <div
             style={{ fontSize: 16, paddingBottom: 8, paddingLeft: '21px', paddingRight: 0, textAlign: 'left', color: '#637381' }}
           >
-            EXCHANGE
+            You Send
           </div>
+
+          {/* <div> */}
+
           <Box>
             <Split
               primary={
@@ -186,8 +195,8 @@ export default function Main() {
                       onChange={event => {
                         handleAmountChange(event)
                       }}
-                      adornment={<img alt={`from`} src={`https://cryptoicons.org/api/icon/${from}/25`} />}
-                      adornmentPosition='end'
+                      // adornment={}
+                      // adornmentPosition='end'
                     ></TextInput>
                   </Field>
 
@@ -229,21 +238,30 @@ export default function Main() {
             />
           </Box>
 
-          <div style={{ padding: '20px', display: 'flex', justifyContent: 'center' }}>
-            <IconArrowDown></IconArrowDown>
+          <div style={{ padding: '15px', display: 'flex', justifyContent: 'center' }}>
+            <img style={{ width: 25, height: 25 }} alt={`from`} src={`https://cryptoicons.org/api/icon/${from}/25`} />
+            <span style={{ paddingLeft: 15, paddingRight: 15 }}>
+              {' '}
+              <IconArrowRight />{' '}
+            </span>
+
+            <img style={{ width: 25, height: 25 }} alt={`${to}`} src={`https://cryptoicons.org/api/icon/${to}/25`} />
+            <LinkBase
+              style={{ paddingLeft: 25 }}
+              onClick={() => {
+                setUseFix(!fixed)
+              }}
+            >
+              {fixed ? <IconLock /> : <IconUnlock />}
+            </LinkBase>
           </div>
 
           <Box>
-            {/* <span style={{ fontSize: 12, marginBottom: 10, textAlign: 'left', color: '#637381' }}></span> */}
-            <div style={{ fontSize: 12, textAlign: 'right', color: '#637381' }}>Fix Rate</div>
-            <div style={{ textAlign: 'right', color: '#637381' }}>
-              <Switch checked={fixed} onChange={handleSwitchFixRate} />
-            </div>
             <Split
               primary={
                 <div>
-                  <Field label='Amount'>
-                    <TextInput
+                  <Field label='Offers'>
+                    {/* <TextInput
                       type='number'
                       disabled
                       value={currentOffer ? currentOffer.amount : 0}
@@ -255,8 +273,22 @@ export default function Main() {
                         )
                       }
                       adornmentPosition='end'
-                    ></TextInput>
-                    {/* {debouncedGetOffers.loading && <LoadingRing></LoadingRing> } */}
+                    ></TextInput> */}
+                    {debouncedGetOffers.loading ? (
+                      <LoadingRing />
+                    ) : (
+                      <RadioList
+                        items={
+                          offers.length > 0
+                            ? offers.map(offer => {
+                                return {
+                                  description: `${offer.amount} ${to.toUpperCase()}    ${'\t\t'}   Powered by ${offer.exchange}`,
+                                }
+                              })
+                            : [{ description: `No ${fixed ? 'fix rate' : 'float rate'} offers ` }]
+                        }
+                      />
+                    )}
                   </Field>
 
                   <Field label='Withdraw Address'>
@@ -276,7 +308,7 @@ export default function Main() {
                     onChange={setToSearchTerm}
                     value={toSearchTerm}
                     onSelect={handleToCoinChange}
-                    renderSelected={x => <> {x.label} </>}
+                    renderSelected={x => <LinkBase disabled>{x.label}</LinkBase>}
                     selected={selectedTo}
                     onSelectedClick={() => {
                       setSelectedTo(null)
