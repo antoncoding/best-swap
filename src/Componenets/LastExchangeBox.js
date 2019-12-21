@@ -11,7 +11,6 @@ import {
   Button
 } from '@aragon/ui'
 
-
 import { Changelly } from './Exchanges';
 
 export default function LastExchange(tx_from, tx_to, tx_amount_from, tx_amount_to, tx_id, payinAddress, exchangeName) {

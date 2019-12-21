@@ -8,17 +8,17 @@ const changelly = new Changelly(apiKey, apiSecret)
 export const getExchangeAmount = async (from, to, amount, fix) => {
   if (!fix) {
     const result = await changelly.getExchangeAmount([{ from, to, amount }])
-    return { amount: result[0].result, id: '' }
+    return { amount: Number(result[0].result), id: '' }
   } else {
     const result = await changelly.getFixRateForAmount([{ from, to, amountFrom: amount }])
-    return { amount: result[0].amountTo, id: result[0].id }
+    return { amount: Number(result[0].amountTo), id: result[0].id }
   }
 }
 
-export const getMinForFloatAndFix = async (from, to) => {
+export const getMinMaxForFloatAndFix = async (from, to) => {
   const pairParams = await changelly.getPairsParams([{ from, to }])
-  const { minAmountFloat, minAmountFixed } = pairParams[0]
-  return { minAmountFloat, minAmountFixed }
+  const { minAmountFloat, minAmountFixed, maxAmountFloat, maxAmountFixed } = pairParams[0]
+  return { minAmountFloat, minAmountFixed, maxAmountFloat, maxAmountFixed }
 }
 
 export const getCurrenciesSymbolAndLabel = async () => {

@@ -11,8 +11,10 @@ import { Box, Split, IconArrowDown, TextInput, Field, Switch, _AutoCompleteSelec
 
 import { Changelly } from './Exchanges'
 
+import * as Aggregator from './Exchanges/aggregator'
+
 const getExchangeAmount = async (_from, _to, _amount, _fix) => {
-  return Changelly.getExchangeAmount(_from, _to, _amount, _fix)
+  return await Aggregator.getBestOffer(_from, _to, _amount, _fix)
 }
 
 const useSearchExchangeAmount = () => {
@@ -27,9 +29,8 @@ const useSearchExchangeAmount = () => {
   const debouncedGetExchangeAmount = useAsync(
     async (from, to, amount, fix) => {
       // If the input is empty, return nothing immediately (without the debouncing delay!)
-      if (from === to) {
-        console.log(`what up`)
-        return [ 0 ]
+      if (from === to || amount === 0 ) {
+        return {amount: 0, id: ''}
       }
       // Else we use the debounced api
       else {
@@ -88,7 +89,6 @@ export default function Main() {
   let handleSwitchFixRate = useFix => {
     setUseFix(useFix)
     debouncedGetExchangeAmount.execute(from, to, amount, useFix)
-    // getExchangeAmount(from, to, amount, useFix)
   }
 
   let handleFromCoinChange = label => {
@@ -126,7 +126,7 @@ export default function Main() {
   }
 
   let updateMinAmounts = async (_from, _to) => {
-    const { minAmountFixed, minAmountFloat } = await Changelly.getMinForFloatAndFix(_from, _to)
+    const { minAmountFixed, minAmountFloat } = await Changelly.getMinMaxForFloatAndFix(_from, _to)
     setMinAmountFloat(minAmountFloat)
     setMinAmountFixed(minAmountFixed)
   }
