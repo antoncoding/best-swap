@@ -13,6 +13,7 @@ import {
   LinkBase,
   Box,
   Split,
+  IconArrowDown,
   IconArrowRight,
   IconLock,
   IconUnlock,
@@ -239,13 +240,13 @@ export default function Main() {
           </Box>
 
           <div style={{ padding: '15px', display: 'flex', justifyContent: 'center' }}>
-            <img style={{ width: 25, height: 25 }} alt={`from`} src={`https://cryptoicons.org/api/icon/${from}/25`} />
+            {/* <img style={{ width: 25, height: 25 }} alt={`from`} src={`https://cryptoicons.org/api/icon/${from}/25`} /> */}
             <span style={{ paddingLeft: 15, paddingRight: 15 }}>
               {' '}
-              <IconArrowRight />{' '}
+              <IconArrowDown />{' '}
             </span>
 
-            <img style={{ width: 25, height: 25 }} alt={`${to}`} src={`https://cryptoicons.org/api/icon/${to}/25`} />
+            {/* <img style={{ width: 25, height: 25 }} alt={`${to}`} src={`https://cryptoicons.org/api/icon/${to}/25`} /> */}
             <LinkBase
               style={{ paddingLeft: 25 }}
               onClick={() => {
@@ -281,8 +282,12 @@ export default function Main() {
                         items={
                           offers.length > 0
                             ? offers.map(offer => {
-                                return {
-                                  description: `${offer.amount} ${to.toUpperCase()}    ${'\t\t'}   Powered by ${offer.exchange}`,
+                                return offer.error ?
+                                { title: `${offer.amount} ${to.toUpperCase()}`,
+                                  description: `${offer.exchange}:  ${offer.error}` } : 
+                                { 
+                                  title: `${offer.amount} ${to.toUpperCase()}`,
+                                  description: `${offer.exchange}` 
                                 }
                               })
                             : [{ description: `No ${fixed ? 'fix rate' : 'float rate'} offers ` }]

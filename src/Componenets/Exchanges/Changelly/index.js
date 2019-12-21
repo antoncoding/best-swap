@@ -4,7 +4,7 @@ const apiKey = process.env.REACT_APP_APIKey
 const apiSecret = process.env.REACT_APP_APISecret
 const changelly = new Changelly(apiKey, apiSecret)
 
-const EXCHANGE_NAME = 'changelly'
+const EXCHANGE_NAME = 'Changelly'
 
 export const getExchangeAmount = async (from, to, amount, fix) => {
   if (!fix) {

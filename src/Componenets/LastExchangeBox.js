@@ -18,7 +18,7 @@ export default function LastExchange(transaction) {
 
   const updateExchangeStatus = async () => {
     switch (transaction.exchange) {
-      case 'changelly': {
+      case 'Changelly': {
         const result = await Changelly.getTransactionStatus(transaction.id)
         setStatus(result)
         break;

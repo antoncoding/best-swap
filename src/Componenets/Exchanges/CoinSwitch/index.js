@@ -1,6 +1,6 @@
 import * as CoinSwitchAPI from './api'
 
-const  EXCHANGE_NAME = 'coinswitch'
+const  EXCHANGE_NAME = 'CoinSwitch'
 
 /**
  * 
@@ -19,13 +19,14 @@ export const getExchangeAmount = async (from, to, amount, fix) => {
       return { amount: destinationAmount, id, exchange: EXCHANGE_NAME }
     } else {
       const { limitMinDepositCoin: minDeposit, limitMaxDepositCoin: maxDeposit, rate, minerFee } = await CoinSwitchAPI.getRates(from, to)
-      if (amount < minDeposit || amount > maxDeposit) throw new Error(`CoinSwitch Invalid Amount: must be between ${minDeposit} and ${maxDeposit}`)
+      if (amount < minDeposit) throw new Error(`Min Amount: ${minDeposit}`)
+      if (amount > maxDeposit) throw new Error(`Max Amount: ${maxDeposit}`)
+      // if (amount < minDeposit || amount > maxDeposit) throw new Error(`CoinSwitch Invalid Amount: must be between ${} and ${maxDeposit}`)
       const destinationAmount = amount * rate - minerFee
       return { amount: destinationAmount, id: '', exchange: EXCHANGE_NAME }
     }
   } catch (error) {
-    console.error(error)
-    return { amount: 0 }
+    return { amount: 0, exchange: EXCHANGE_NAME, error }
   }
   
 }

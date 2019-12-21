@@ -118,7 +118,7 @@ const requestCoinSwitch = async (endpoint, method, params) => {
       if (resJson.success) return resJson.data
       throw resJson.msg
     } catch (error) {
-      throw new Error(`CoinSwitch API Error`)
+      throw new Error(`Pair not supported`)
     }
   } else {
     throw await response.text()

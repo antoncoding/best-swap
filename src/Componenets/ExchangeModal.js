@@ -30,7 +30,7 @@ export default function ExchangeModal(
     } else {
       try {
         switch (exchangeName) {
-          case 'changelly': {
+          case 'Changelly': {
             const transaction = await Changelly.createTransaction(
               fixed,
               fixRateId,
@@ -43,7 +43,7 @@ export default function ExchangeModal(
               refundExtraId
             )
 
-            transaction.exchange = 'changelly'
+            transaction.exchange = 'Changelly'
             // console.log(transaction)
 
             setOpened(true)
