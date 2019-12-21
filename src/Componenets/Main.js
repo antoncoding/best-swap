@@ -9,14 +9,7 @@ import useConstant from 'use-constant'
 
 import { Box, Split, IconArrowDown, TextInput, Field, Switch, _AutoCompleteSelected as AutoCompleteSelected } from '@aragon/ui'
 
-// import { apiKey, apiSecret } from '../config'
-import { Changelly } from 'changelly-js'
-
 import * as MyChangelly from './ChangellyInterface'
-
-const apiKey = process.env.REACT_APP_APIKey
-const apiSecret = process.env.REACT_APP_APISecret
-const changelly = new Changelly(apiKey, apiSecret)
 
 const getExchangeAmount = async (_from, _to, _amount, _fix) => {
   return MyChangelly.getExchangeAmount(_from, _to, _amount, _fix)
@@ -296,7 +289,7 @@ export default function ChangellyEx() {
           </div>
         </div>
       }
-      secondary={LastExchangeBox(tx_from, tx_to, tx_amount_from, tx_amount_to, tx_id, payinAddress, changelly)}
+      secondary={LastExchangeBox(tx_from, tx_to, tx_amount_from, tx_amount_to, tx_id, payinAddress, 'changelly')}
     />
   )
 }

@@ -6,18 +6,29 @@ import {
   TableRow, 
   TableCell, 
   Text, 
-  IconRefresh, 
-  // Help, 
+  IconRefresh,  
   shortenAddress, 
   Button
 } from '@aragon/ui'
 
-export default function LastExchange(tx_from, tx_to, tx_amount_from, tx_amount_to, tx_id, payinAddress, changelly) {
+
+import * as Changelly from './ChangellyInterface';
+
+export default function LastExchange(tx_from, tx_to, tx_amount_from, tx_amount_to, tx_id, payinAddress, exchangeName) {
   const [status, setStatus] = useState('unkown')
 
   const updateExchangeStatus = async () => {
-    const result = await changelly.getStatus(tx_id)
-    setStatus(result)
+    switch (exchangeName) {
+      case 'changelly': {
+        const result = await Changelly.getTransactionStatus(tx_id)
+        setStatus(result)
+        break;
+      }
+      default :{
+        console.error(`Unknown exchange`)
+        break;
+      }
+    }
   }
 
 

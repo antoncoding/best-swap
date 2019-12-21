@@ -60,3 +60,7 @@ export const createTransaction = async (
     return await changelly.createTransaction(from, to, address, amount, extraId, refundAddress, refundExtraId)
   }
 }
+
+export const getTransactionStatus = async (id) => {
+  return await changelly.getStatus(id);
+}
