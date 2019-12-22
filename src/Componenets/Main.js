@@ -172,12 +172,10 @@ export default function Main() {
   }
 
   let updateLimitAmounts = async (_from, _to) => {
-    console.log(`[[ Start ]] updateLimit`)
     const {limits, minAmountFixed, minAmountFloat} = await Aggregator.getLimitsForPair(_from, _to)
     setLimits(limits)
     setMinAmountFloat(minAmountFloat)
     setMinAmountFixed(minAmountFixed)
-    console.log(`[[ Finish ]] update Limits`)
   }
 
   if (fresh) {
@@ -277,9 +275,7 @@ export default function Main() {
                     ) : (
                       <RadioList
                         onChange={(index) => {
-                          console.log(`setting index ${index}`)
                           setOfferIndex(index)
-                          // setCurrentOffer(offers[index])
                         }}
                         selected={selectedOfferIndex}
                         items={

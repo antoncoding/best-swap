@@ -105,7 +105,6 @@ export const getBulkRate = async pairs => {
 }
 
 const requestCoinSwitch = async (endpoint, method, params) => {
-  console.log(`CoinSwitch Req ${endpoint}`, params)
   const url = URI + endpoint
   let options = {
     method,
