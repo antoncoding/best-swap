@@ -52,10 +52,7 @@ export default function ExchangeModal(
             throw new Error(`${exchangeName} transaction not supported yet`);
           }
         }
-
-        // update_ExtraIdName(extraId_name)
       } catch (error) {
-        console.error(error)
         setErrorMessage(error.message)
         setErrorOpened(true)
       }
