@@ -10,23 +10,14 @@ import {
   Button
 } from '@aragon/ui'
 
-import { Changelly } from './Exchanges';
+import * as Aggregator from './Exchanges/aggregator'
 
 export default function LastExchange(transaction) {
   const [status, setStatus] = useState('unkown')
 
   const updateExchangeStatus = async () => {
-    switch (transaction.exchange) {
-      case 'Changelly': {
-        const result = await Changelly.getTransactionStatus(transaction.id)
-        setStatus(result)
-        break;
-      }
-      default :{
-        console.error(`Unknown exchange`)
-        break;
-      }
-    }
+    const status = await Aggregator.getTransactionStatus(transaction.exchange, transaction.id)
+    setStatus(status)
   }
 
 
