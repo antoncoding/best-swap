@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/best-swap/static/css/main.1d59d1eb.chunk.css",
-    "main.js": "/best-swap/static/js/main.a116e696.chunk.js",
-    "main.js.map": "/best-swap/static/js/main.a116e696.chunk.js.map",
+    "main.js": "/best-swap/static/js/main.42e22647.chunk.js",
+    "main.js.map": "/best-swap/static/js/main.42e22647.chunk.js.map",
     "runtime-main.js": "/best-swap/static/js/runtime-main.bf868fba.js",
     "runtime-main.js.map": "/best-swap/static/js/runtime-main.bf868fba.js.map",
     "static/js/2.3f74a79e.chunk.js": "/best-swap/static/js/2.3f74a79e.chunk.js",
     "static/js/2.3f74a79e.chunk.js.map": "/best-swap/static/js/2.3f74a79e.chunk.js.map",
     "index.html": "/best-swap/index.html",
-    "precache-manifest.bcc086c661b8f4229b4074c566ec1d6d.js": "/best-swap/precache-manifest.bcc086c661b8f4229b4074c566ec1d6d.js",
+    "precache-manifest.aa58ed655cff7742013c51092304130c.js": "/best-swap/precache-manifest.aa58ed655cff7742013c51092304130c.js",
     "service-worker.js": "/best-swap/service-worker.js",
     "static/css/main.1d59d1eb.chunk.css.map": "/best-swap/static/css/main.1d59d1eb.chunk.css.map",
     "static/js/2.3f74a79e.chunk.js.LICENSE": "/best-swap/static/js/2.3f74a79e.chunk.js.LICENSE",
@@ -19,6 +19,6 @@
     "static/js/runtime-main.bf868fba.js",
     "static/js/2.3f74a79e.chunk.js",
     "static/css/main.1d59d1eb.chunk.css",
-    "static/js/main.a116e696.chunk.js"
+    "static/js/main.42e22647.chunk.js"
   ]
 }
