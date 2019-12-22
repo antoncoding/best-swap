@@ -1,4 +1,5 @@
 import { Changelly } from 'changelly-js'
+import { amountCheck } from '../common'
 
 const apiKey = process.env.REACT_APP_APIKey
 const apiSecret = process.env.REACT_APP_APISecret
@@ -6,34 +7,39 @@ const changelly = new Changelly(apiKey, apiSecret)
 
 const exchange = 'Changelly'
 
-export const getExchangeAmount = async (from, to, amount, fix) => {
-  if (!fix) {
-    const result = await changelly.getExchangeAmount([{ from, to, amount }])
-    return {
-      amount: Number(result[0].result),
-      id: '',
-      exchange,
+export const getExchangeAmount = async (from, to, amount, fix, limit) => {
+  try {
+    if (limit) amountCheck(fix, amount, limit)
+    if (!fix) {
+      const result = await changelly.getExchangeAmount([{ from, to, amount }])
+      return {
+        amount: Number(result[0].result),
+        id: '',
+        exchange,
+      }
+    } else {
+      const result = await changelly.getFixRateForAmount([{ from, to, amountFrom: amount }])
+      return {
+        amount: Number(result[0].amountTo),
+        id: result[0].id,
+        exchange,
+      }
     }
-  } else {
-    const result = await changelly.getFixRateForAmount([{ from, to, amountFrom: amount }])
-    return {
-      amount: Number(result[0].amountTo),
-      id: result[0].id,
-      exchange,
-    }
+  } catch(error) {
+    return { amount:0, exchange, error: error.toString() }
   }
 }
 
 export const getMinMaxForPair = async (from, to) => {
   const pairParams = await changelly.getPairsParams([{ from, to }])
   const { minAmountFloat, minAmountFixed, maxAmountFloat, maxAmountFixed } = pairParams[0]
-  return { 
-    minAmountFloat: Number(minAmountFloat), 
-    minAmountFixed: Number(minAmountFixed), 
-    maxAmountFloat: maxAmountFloat===null? Number.MAX_VALUE : Number(maxAmountFloat), 
-    maxAmountFixed: maxAmountFixed===null? Number.MAX_VALUE : Number(maxAmountFixed),
-    exchange
-  } 
+  return {
+    minAmountFloat: Number(minAmountFloat),
+    minAmountFixed: Number(minAmountFixed),
+    maxAmountFloat: maxAmountFloat === null ? Number.MAX_VALUE : Number(maxAmountFloat),
+    maxAmountFixed: maxAmountFixed === null ? Number.MAX_VALUE : Number(maxAmountFixed),
+    exchange,
+  }
   // return { minAmountFloat, minAmountFixed, maxAmountFloat, maxAmountFixed, exchange }
 }
 
@@ -82,7 +88,7 @@ export const createTransaction = async (
       payinAddress: tx.payinAddress,
       payinExtraId: tx.payinExtraId,
       expiration: tx.payTill,
-      exchange
+      exchange,
     }
   } else {
     const tx = await changelly.createTransaction(from, to, address, amount, extraId, refundAddress, refundExtraId)
@@ -106,7 +112,7 @@ export const createTransaction = async (
       payoutAddress: tx.payoutAddress,
       payinAddress: tx.payinAddress,
       payinExtraId: tx.payinExtraId,
-      exchange
+      exchange,
     }
   }
 }

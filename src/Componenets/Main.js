@@ -38,6 +38,7 @@ const useSearchExchangeAmount = () => {
   const [amount, setAmount] = useState(0)
   const [fixed, setUseFix] = useState(false)
   // const [currentOffer, setCurrentOffer] = useState(null)
+  const [selectedOfferIndex, setOfferIndex] = useState(0);
   const [offers, setOffers] = useState([])
   const [limits, setLimits] = useState([])
 
@@ -47,8 +48,10 @@ const useSearchExchangeAmount = () => {
   const debouncedGetOffers = useAsync(
     async (from, to, amount, fix) => {
       if (from !== to && amount !== 0) {
-        const { offers } = await debouncedGetOffersOnce(from, to, amount, fix, limits)
+        const { offers, bestOfferIndex } = await debouncedGetOffersOnce(from, to, amount, fix, limits)
         setOffers(offers)
+        setOfferIndex(bestOfferIndex)
+
       }
     },
     // Ensure a new request is made everytime the text changes (even if it's debounced)
@@ -65,6 +68,7 @@ const useSearchExchangeAmount = () => {
     fixed,
     offers,
     limits,
+    selectedOfferIndex,
 
     setUseFix,
     setFrom,
@@ -72,6 +76,8 @@ const useSearchExchangeAmount = () => {
     setAmount,
     setOffers,
     setLimits,
+    setOfferIndex,
+    
   }
 }
 
@@ -89,12 +95,15 @@ export default function Main() {
     setTo,
     amount,
     setAmount,
+    selectedOfferIndex,
+    
     debouncedGetOffers,
     // setCurrentOffer,
     offers,
     fixed,
     setUseFix,
-    setLimits
+    setLimits,
+    setOfferIndex
   } = useSearchExchangeAmount()
 
   const [fresh, setFresh] = useState(true)
@@ -121,7 +130,7 @@ export default function Main() {
 
   const [selectedFrom, setSelectedFrom] = useState({ symbol: 'btc', label: 'Bitcoin (btc)' })
   const [selectedTo, setSelectedTo] = useState({ symbol: 'eth', label: 'Ethereum (eth)' })
-  const [selectedOfferIndex, setOfferIndex] = useState(0);
+  
 
   let handleFromCoinChange = async label => {
     setSearchTerm(label)
