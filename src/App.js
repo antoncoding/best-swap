@@ -30,7 +30,7 @@ function App() {
 
       <SidePanel title='About BestSwap' opened={sidePanelOpened} onClose={() => setSidePanelOpened(false)}>
         <div style={{ padding: 20, fontSize: 15 }}> Powered By </div>
-        
+
         <Box>
           <ButtonBase
             onClick={() => {
@@ -38,21 +38,25 @@ function App() {
             }}
             showFocusRing={false}
           >
-            <img width={300} src={AragonUILogog} alt='aragon-ui'></img>
+            <div style={{ paddingLeft: '5%', alignContent: 'center', alignItems: 'center' }}>
+              <img width={300} src={AragonUILogog} alt='aragon-ui'></img>
+            </div>
           </ButtonBase>
         </Box>
 
         <Box>
-        <ButtonBase
+          <ButtonBase
             onClick={() => {
               window.open('https://changelly.com/?ref_id=oz145mh990w1b4wr', '_blank')
             }}
             showFocusRing={false}
           >
-          <img width={300} src={ChangellyLogo} alt='changelly'></img>
+            <div style={{ paddingLeft: '5%', alignContent: 'center', alignItems: 'center' }}>
+            <img width={300} src={ChangellyLogo} alt='changelly'></img>
+            </div>
           </ButtonBase>
         </Box>
-        
+
         <Box>
           <ButtonBase
             onClick={() => {
