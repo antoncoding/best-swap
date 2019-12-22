@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 
 import { Modal, Button, Info, AddressField, IdentityBadge } from '@aragon/ui'
 
+import * as Aggregator from './Exchanges/aggregator'
+
 import { Changelly } from './Exchanges/'
 
 export default function ExchangeModal(
@@ -29,29 +31,21 @@ export default function ExchangeModal(
       setErrorOpened(true)
     } else {
       try {
-        switch (exchangeName) {
-          case 'Changelly': {
-            const transaction = await Changelly.createTransaction(
-              fixed,
-              fixRateId,
-              from,
-              to,
-              address,
-              amount,
-              null,
-              refundAddress,
-              refundExtraId
-            )
+        const transaction = await Aggregator.createTransaction(
+          exchangeName,
+          fixed,
+          fixRateId,
+          from,
+          to,
+          amount,
+          address,
+          null,
+          refundAddress,
+          refundExtraId
+        )
 
-            setOpened(true)
-            updateTransaction(transaction)
-            break
-          }
-
-          default: {
-            throw new Error(`${exchangeName} transaction not supported yet`);
-          }
-        }
+        setOpened(true)
+        updateTransaction(transaction)
       } catch (error) {
         setErrorMessage(error.message)
         setErrorOpened(true)
