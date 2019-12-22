@@ -74,7 +74,9 @@ export const getFixedPairs = async (depositCoin = null, destinationCoin = null) 
   if (destinationCoin) params.destinationCoin = destinationCoin
 
   const pairs = await requestCoinSwitch('fixed/pairs', 'POST', params)
-  return pairs.filter(pair => pair.isActive)
+  const result = pairs.filter(pair => pair.isActive)
+  if(result.length ===0) return [ { error: 'Fix rate trading of this pair not supported' } ]
+  return result
 }
 
 /**
@@ -103,6 +105,7 @@ export const getBulkRate = async pairs => {
 }
 
 const requestCoinSwitch = async (endpoint, method, params) => {
+  console.log(`CoinSwitch Req ${endpoint}`, params)
   const url = URI + endpoint
   let options = {
     method,

@@ -9,7 +9,7 @@ const exchange = 'Changelly'
 
 export const getExchangeAmount = async (from, to, amount, fix, limit) => {
   try {
-    if (limit) amountCheck(fix, amount, limit)
+    amountCheck(fix, amount, limit)
     if (!fix) {
       const result = await changelly.getExchangeAmount([{ from, to, amount }])
       return {
@@ -25,22 +25,26 @@ export const getExchangeAmount = async (from, to, amount, fix, limit) => {
         exchange,
       }
     }
-  } catch(error) {
-    return { amount:0, exchange, error: error.toString() }
+  } catch (error) {
+    return { amount: 0, exchange, error: error.toString() }
   }
 }
 
 export const getMinMaxForPair = async (from, to) => {
-  const pairParams = await changelly.getPairsParams([{ from, to }])
-  const { minAmountFloat, minAmountFixed, maxAmountFloat, maxAmountFixed } = pairParams[0]
-  return {
-    minAmountFloat: Number(minAmountFloat),
-    minAmountFixed: Number(minAmountFixed),
-    maxAmountFloat: maxAmountFloat === null ? Number.MAX_VALUE : Number(maxAmountFloat),
-    maxAmountFixed: maxAmountFixed === null ? Number.MAX_VALUE : Number(maxAmountFixed),
-    exchange,
+  try {
+    const pairParams = await changelly.getPairsParams([{ from, to }])
+    const { minAmountFloat, minAmountFixed, maxAmountFloat, maxAmountFixed } = pairParams[0]
+    return {
+      minAmountFloat: Number(minAmountFloat),
+      minAmountFixed: Number(minAmountFixed),
+      maxAmountFloat: maxAmountFloat === null ? Number.MAX_VALUE : Number(maxAmountFloat),
+      maxAmountFixed: maxAmountFixed === null ? Number.MAX_VALUE : Number(maxAmountFixed),
+      exchange,
+    }
+  } catch (error) {
+    return { exchange, error }
   }
-  // return { minAmountFloat, minAmountFixed, maxAmountFloat, maxAmountFixed, exchange }
+
 }
 
 export const getCurrenciesSymbolAndLabel = async () => {

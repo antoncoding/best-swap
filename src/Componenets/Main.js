@@ -28,6 +28,7 @@ import { Changelly } from './Exchanges'
 import * as Aggregator from './Exchanges/aggregator'
 
 const getAggregateBestOffer = async (_from, _to, _amount, _fix, limits) => {
+  // console.log(`starting to get offer`)
   return await Aggregator.getBestOffer(_from, _to, _amount, _fix, limits)
 }
 
@@ -43,18 +44,19 @@ const useSearchExchangeAmount = () => {
   const [limits, setLimits] = useState([])
 
   // Debounce the original search async function
-  const debouncedGetOffersOnce = useConstant(() => AwesomeDebouncePromise(getAggregateBestOffer, 300))
+  const debouncedGetOffersOnce = useConstant(() => AwesomeDebouncePromise(getAggregateBestOffer, 1000))
 
   const debouncedGetOffers = useAsync(
-    async (from, to, amount, fix) => {
+    async () => {
       if (from !== to && amount !== 0) {
-        const { offers, bestOfferIndex } = await debouncedGetOffersOnce(from, to, amount, fix, limits)
+        const { offers, bestOfferIndex } = await debouncedGetOffersOnce(from, to, amount, fixed, limits)
         setOffers(offers)
         setOfferIndex(bestOfferIndex)
 
       }
     },
     // Ensure a new request is made everytime the text changes (even if it's debounced)
+    // [amount],
     [from, to, amount, fixed]
   )
 
@@ -139,8 +141,10 @@ export default function Main() {
     setSelectedFrom(fromObj)
 
     const _from = fromObj.symbol
+    
+    await updateLimitAmounts(_from, to)
     setFrom(_from)
-    updateLimitAmounts(_from, to)
+    // debouncedGetOffers.execute(_from, to, amount, fixed, limits)
   }
 
   let handleToCoinChange = async label => {
@@ -148,8 +152,10 @@ export default function Main() {
     const toObj = currencies.find(coin => coin.label === label)
     setSelectedTo(toObj)
     const _to = toObj.symbol
+    
+    await updateLimitAmounts(from, _to)
     setTo(_to)
-    updateLimitAmounts(from, _to)
+    // debouncedGetOffers.execute(from, _to, amount, fixed)
   }
 
   let handleAmountChange = async event => {
@@ -166,18 +172,20 @@ export default function Main() {
   }
 
   let updateLimitAmounts = async (_from, _to) => {
+    console.log(`[[ Start ]] updateLimit`)
     const {limits, minAmountFixed, minAmountFloat} = await Aggregator.getLimitsForPair(_from, _to)
     setLimits(limits)
     setMinAmountFloat(minAmountFloat)
     setMinAmountFixed(minAmountFixed)
+    console.log(`[[ Finish ]] update Limits`)
   }
 
   if (fresh) {
+    setFresh(false)
     Changelly.getCurrenciesSymbolAndLabel().then(_currencies => {
-      setFresh(false)
       updateCurrencies(_currencies)
+      updateLimitAmounts(from, to)
     })
-    updateLimitAmounts(from, to)
   }
 
   return (
