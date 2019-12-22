@@ -2,6 +2,7 @@ const URI_PREFIX = process.env.REACT_APP_CORS_PREFIX || ''
 const URI = URI_PREFIX + 'https://api.coinswitch.co/v2/'
 console.log(`CoinSwitch: ${URI}`)
 const API_KEY = process.env.REACT_APP_COINSWITCH_KEY
+// const API_KEY = 'cRbHFJTlL6aSfZ0K2q7nj6MgV5Ih4hbA2fUG0ueO' // sandbox 
 if (!API_KEY) throw Error('Missing CoinSwitch APIKey')
 
 /**
@@ -103,6 +104,55 @@ export const getBulkRate = async pairs => {
   return requestCoinSwitch('bulk-rate', 'POST', pairs)
 }
 
+
+/**
+ * Float rate order
+ * @param {string} depositCoin 
+ * @param {string} destinationCoin 
+ * @param {number} depositCoinAmount 
+ * @param {string} address 
+ * @param {string} tag 
+ * @param {string} refundAddr
+ * @param {string} refundTag 
+ */
+export const createOrder = async(depositCoin, destinationCoin, depositCoinAmount, address, tag, refundAddr, refundTag) => {
+  if (!tag) tag = null
+  if (!refundTag) refundTag =null
+  const destinationAddress = { address, tag }
+  const refundAddress = { address: refundAddr, tag: refundTag }
+  const params = { depositCoin, destinationCoin, depositCoinAmount, destinationAddress, refundAddress }
+  const order = await requestCoinSwitch('order', 'POST', params)
+  return order
+}
+
+/**
+ * Fix Rate Order
+ * @param {string} offerReferenceId 
+ * @param {string} depositCoin 
+ * @param {string} destinationCoin 
+ * @param {number} depositCoinAmount 
+ * @param {string} address 
+ * @param {string} tag 
+ * @param {string} refundAddr 
+ * @param {string} refundTag 
+ */
+export const createFixOrder = async(offerReferenceId, depositCoin, destinationCoin, depositCoinAmount, address, tag, refundAddr, refundTag) => {
+  if (!tag) tag = null
+  if (!refundTag) refundTag =null
+  const destinationAddress = { address, tag }
+  const refundAddress = { address: refundAddr, tag: refundTag }
+  const params = { offerReferenceId, depositCoin, destinationCoin, depositCoinAmount, destinationAddress, refundAddress }
+  const order = await requestCoinSwitch('fixed/order', 'POST', params)
+  console.log(order)
+  return order
+}
+
+
+export const getOrderStatus = async id => {
+  const endpoint = `/order/${id}`
+  return await requestCoinSwitch(endpoint, 'GET')
+}
+
 const requestCoinSwitch = async (endpoint, method, params) => {
   const url = URI + endpoint
   let options = {
@@ -117,14 +167,9 @@ const requestCoinSwitch = async (endpoint, method, params) => {
 
   const response = await fetch(url, options)
   if (response.status === 200) {
-    try{
-      const resJson = await response.json()
-      if (resJson.success) return resJson.data
-      throw resJson.msg
-    } catch (error) {
-      console.error(error)
-      throw new Error(`Pair not supported`)
-    }
+    const resJson = await response.json()
+    if (resJson.success) return resJson.data
+    throw resJson.msg
   } else {
     throw await response.text()
   }

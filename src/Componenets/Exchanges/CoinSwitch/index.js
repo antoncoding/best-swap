@@ -49,3 +49,49 @@ export const getMinMaxForPair = async (from, to) => {
     return { error, exchange }
   }
 }
+
+export const createOrder = async (
+  fix,
+  rateId,
+  from,
+  to,
+  amount,
+  address,
+  extraId = null,
+  refundAddress = null,
+  refundExtraId = null
+) => {
+  if (fix) {
+    const tx = await CoinSwitchAPI.createFixOrder( rateId, from, to, amount, address, extraId, refundAddress, refundExtraId )
+    return {
+      from,
+      to,
+      payoutAddress: address,
+      amountFrom: tx.expectedDepositCoinAmount,
+      amountTo: tx.expectedDestinationCoinAmount,
+      id: tx.orderId,
+      payinAddress: tx.exchangeAddress.address,
+      payinExtraId: tx.exchangeAddress.tag,
+      exchange,
+    }
+  } else {
+    const tx = await CoinSwitchAPI.createOrder(from, to,  amount, address, extraId, refundAddress, refundExtraId)
+    
+    return {
+      from,
+      to,
+      payoutAddress: address,
+      amountFrom: tx.expectedDepositCoinAmount,
+      amountTo: tx.expectedDestinationCoinAmount,
+      id: tx.orderId,
+      payinAddress: tx.exchangeAddress.address,
+      payinExtraId: tx.exchangeAddress.tag,
+      exchange,
+    }
+  }
+}
+
+export const getOrderStatus = async id => {
+  const order = await CoinSwitchAPI.getOrderStatus(id)
+  return order.status
+}
