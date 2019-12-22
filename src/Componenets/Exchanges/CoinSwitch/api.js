@@ -1,5 +1,6 @@
 const URI_PREFIX = process.env.REACT_APP_CORS_PREFIX || ''
 const URI = URI_PREFIX + 'https://api.coinswitch.co/v2/'
+console.log(`CoinSwitch: ${URI}`)
 const API_KEY = process.env.REACT_APP_COINSWITCH_KEY
 if (!API_KEY) throw Error('Missing CoinSwitch APIKey')
 

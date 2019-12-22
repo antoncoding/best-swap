@@ -27,5 +27,6 @@ jobs:
         REACT_APP_APIKey: ${{ secrets.REACT_APP_APIKey }}
         REACT_APP_APISecret: ${{ secrets.REACT_APP_APISecret }}
         REACT_APP_COINSWITCH_KEY: ${{ secrets.REACT_APP_COINSWITCH_KEY}}
+        REACT_APP_CORS_PREFIX: ''
         BRANCH: gh-pages
         FOLDER: build

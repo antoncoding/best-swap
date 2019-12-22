@@ -2,7 +2,7 @@ import * as Changelly from './Changelly/index'
 import * as CoinSwitch from './CoinSwitch/index'
 
 export const getBestOffer = async (from, to, amount, fix, limits) => {
-  console.log(`[GET] get best offer with ${from}, ${to}, ${amount} limits`, limits)
+  // console.log(`[GET] get best offer with ${from}, ${to}, ${amount} limits`, limits)
   const offers = await Promise.all([
     Changelly.getExchangeAmount(from, to, amount, fix, limits[0]),
     CoinSwitch.getExchangeAmount(from, to, amount, fix, limits[1]),
