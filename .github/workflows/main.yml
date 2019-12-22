@@ -19,13 +19,14 @@ jobs:
       run: |
         npm install
         npm run-script build
+      env:
+        REACT_APP_APIKey: ${{ secrets.REACT_APP_APIKey }}
+        REACT_APP_APISecret: ${{ secrets.REACT_APP_APISecret }}
+        REACT_APP_COINSWITCH_KEY: ${{ secrets.REACT_APP_COINSWITCH_KEY}}
 
     - name: Deploy
       uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        REACT_APP_APIKey: ${{ secrets.REACT_APP_APIKey }}
-        REACT_APP_APISecret: ${{ secrets.REACT_APP_APISecret }}
-        REACT_APP_COINSWITCH_KEY: ${{ secrets.REACT_APP_COINSWITCH_KEY}}
         BRANCH: gh-pages
         FOLDER: build
