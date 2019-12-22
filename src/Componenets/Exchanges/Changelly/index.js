@@ -64,8 +64,8 @@ export const createTransaction = async (
   rateId,
   from,
   to,
-  address,
   amount,
+  address,
   extraId = null,
   refundAddress = null,
   refundExtraId = null
