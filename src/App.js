@@ -60,8 +60,8 @@ function App() {
             }}
             showFocusRing={false}
           >
-            <div style={{ paddingLeft: '20px', alignContent: 'center', alignItems: 'center' }}>
-              <img width={300} src={CoinSwitchLogo} alt='coinswitch'></img>
+            <div style={{ paddingLeft: '20%', alignContent: 'center', alignItems: 'center' }}>
+              <img width={230} src={CoinSwitchLogo} alt='coinswitch'></img>
             </div>
           </ButtonBase>
         </Box>

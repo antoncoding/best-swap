@@ -85,10 +85,10 @@ const useSearchExchangeAmount = () => {
 
 export default function Main() {
   const [currencies, updateCurrencies] = useState([])
-  // const [address, setAddress] = useState('')
-  // const [refundAddress, setRefundAddress] = useState('')
-  const [address, setAddress] = useState('0xbAF99eD5b5663329FA417953007AFCC60f06F781')
-  const [refundAddress, setRefundAddress] = useState('bc1qjl8uwezzlech723lpnyuza0h2cdkvxvh54v3dn')
+  const [address, setAddress] = useState('')
+  const [refundAddress, setRefundAddress] = useState('')
+  // const [address, setAddress] = useState('0xbAF99eD5b5663329FA417953007AFCC60f06F781')
+  // const [refundAddress, setRefundAddress] = useState('bc1qjl8uwezzlech723lpnyuza0h2cdkvxvh54v3dn')
 
   const {
     from,
