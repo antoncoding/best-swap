@@ -4,8 +4,7 @@ import {
   Table, 
   TableHeader, 
   TableRow, 
-  TableCell, 
-  Text, 
+  TableCell,
   IconRefresh,  
   shortenAddress, 
   Button
@@ -42,48 +41,44 @@ export default function LastExchange(transaction) {
       >
         <TableRow>
           <TableCell>
-            <Text>Id</Text>
+            Id
           </TableCell>
           <TableCell>
-            <Text>{transaction.id}</Text>
+            {transaction.id}
           </TableCell>
         </TableRow>
 
         <TableRow>
           <TableCell>
-            <Text>Transfer</Text>
+            Transfer
           </TableCell>
           <TableCell>
-            <Text>
               {transaction.amountFrom} {transaction.from}
-            </Text>
           </TableCell>
         </TableRow>
 
         <TableRow>
           <TableCell>
-            <Text>To</Text>
+            To
           </TableCell>
           <TableCell>
-            <Text> {shortenAddress(transaction.payinAddress)} </Text>
+            {shortenAddress(transaction.payinAddress)}
           </TableCell>
         </TableRow>
 
         <TableRow>
           <TableCell>
-            <Text>You get</Text>
+            You get
           </TableCell>
           <TableCell>
-            <Text>
-              {' '}
+            
               {transaction.amountTo} {transaction.to}
-            </Text>
           </TableCell>
         </TableRow>
 
         <TableRow>
           <TableCell>
-            <Text>Status</Text>
+            Status
           </TableCell>
           <TableCell>
             <Button 

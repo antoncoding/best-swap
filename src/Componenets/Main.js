@@ -10,7 +10,7 @@ import useConstant from 'use-constant'
 import {
   RadioList,
   LoadingRing,
-  LinkBase,
+  ButtonBase,
   Box,
   Split,
   IconArrowDown,
@@ -255,14 +255,14 @@ export default function Main() {
             </span>
 
             {/* <img style={{ width: 25, height: 25 }} alt={`${to}`} src={`https://cryptoicons.org/api/icon/${to}/25`} /> */}
-            <LinkBase
+            <ButtonBase
               style={{ paddingLeft: 25 }}
               onClick={() => {
                 setUseFix(!fixed)
               }}
             >
               {fixed ? <IconLock /> : <IconUnlock />}
-            </LinkBase>
+            </ButtonBase>
           </div>
 
           <Box>
