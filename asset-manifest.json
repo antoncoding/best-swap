@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/best-swap/static/css/main.1d59d1eb.chunk.css",
-    "main.js": "/best-swap/static/js/main.3b3dd69a.chunk.js",
-    "main.js.map": "/best-swap/static/js/main.3b3dd69a.chunk.js.map",
+    "main.js": "/best-swap/static/js/main.a116e696.chunk.js",
+    "main.js.map": "/best-swap/static/js/main.a116e696.chunk.js.map",
     "runtime-main.js": "/best-swap/static/js/runtime-main.bf868fba.js",
     "runtime-main.js.map": "/best-swap/static/js/runtime-main.bf868fba.js.map",
     "static/js/2.3f74a79e.chunk.js": "/best-swap/static/js/2.3f74a79e.chunk.js",
     "static/js/2.3f74a79e.chunk.js.map": "/best-swap/static/js/2.3f74a79e.chunk.js.map",
     "index.html": "/best-swap/index.html",
-    "precache-manifest.7bcf5fa0cf56d258e64feffdd81e169d.js": "/best-swap/precache-manifest.7bcf5fa0cf56d258e64feffdd81e169d.js",
+    "precache-manifest.bcc086c661b8f4229b4074c566ec1d6d.js": "/best-swap/precache-manifest.bcc086c661b8f4229b4074c566ec1d6d.js",
     "service-worker.js": "/best-swap/service-worker.js",
     "static/css/main.1d59d1eb.chunk.css.map": "/best-swap/static/css/main.1d59d1eb.chunk.css.map",
     "static/js/2.3f74a79e.chunk.js.LICENSE": "/best-swap/static/js/2.3f74a79e.chunk.js.LICENSE",
@@ -19,6 +19,6 @@
     "static/js/runtime-main.bf868fba.js",
     "static/js/2.3f74a79e.chunk.js",
     "static/css/main.1d59d1eb.chunk.css",
-    "static/js/main.3b3dd69a.chunk.js"
+    "static/js/main.a116e696.chunk.js"
   ]
 }
