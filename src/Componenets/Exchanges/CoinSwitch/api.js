@@ -1,7 +1,6 @@
 const URI_PREFIX = process.env.REACT_APP_CORS_PREFIX || ''
 const URI = URI_PREFIX + 'https://api.coinswitch.co/v2/'
 const API_KEY = process.env.REACT_APP_COINSWITCH_KEY
-// const API_KEY = "cRbHFJTlL6aSfZ0K2q7nj6MgV5Ih4hbA2fUG0ueO"
 if (!API_KEY) throw Error('Missing CoinSwitch APIKey')
 
 /**
