@@ -195,7 +195,7 @@ export default function Main() {
           >
             You Send
           </div>
-          <Box>
+          <Box padding={30}>
             <Split
               primary={
                 <>
@@ -265,7 +265,7 @@ export default function Main() {
             </ButtonBase>
           </div>
 
-          <Box>
+          <Box padding={30}>
             <Split
               primary={
                 <div>
