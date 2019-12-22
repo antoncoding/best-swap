@@ -27,8 +27,8 @@ import { Changelly } from './Exchanges'
 
 import * as Aggregator from './Exchanges/aggregator'
 
-const getAggregateBestOffer = async (_from, _to, _amount, _fix) => {
-  return await Aggregator.getBestOffer(_from, _to, _amount, _fix)
+const getAggregateBestOffer = async (_from, _to, _amount, _fix, limits) => {
+  return await Aggregator.getBestOffer(_from, _to, _amount, _fix, limits)
 }
 
 const useSearchExchangeAmount = () => {
@@ -37,8 +37,9 @@ const useSearchExchangeAmount = () => {
   const [to, setTo] = useState('eth')
   const [amount, setAmount] = useState(0)
   const [fixed, setUseFix] = useState(false)
-  const [currentOffer, setCurrentOffer] = useState(null)
+  // const [currentOffer, setCurrentOffer] = useState(null)
   const [offers, setOffers] = useState([])
+  const [limits, setLimits] = useState([])
 
   // Debounce the original search async function
   const debouncedGetOffersOnce = useConstant(() => AwesomeDebouncePromise(getAggregateBestOffer, 300))
@@ -46,9 +47,8 @@ const useSearchExchangeAmount = () => {
   const debouncedGetOffers = useAsync(
     async (from, to, amount, fix) => {
       if (from !== to && amount !== 0) {
-        const { offers, bestOffer } = await debouncedGetOffersOnce(from, to, amount, fix)
+        const { offers } = await debouncedGetOffersOnce(from, to, amount, fix, limits)
         setOffers(offers)
-        setCurrentOffer(bestOffer)
       }
     },
     // Ensure a new request is made everytime the text changes (even if it's debounced)
@@ -64,14 +64,14 @@ const useSearchExchangeAmount = () => {
     amount,
     fixed,
     offers,
-    currentOffer,
+    limits,
 
     setUseFix,
     setFrom,
     setTo,
     setAmount,
     setOffers,
-    setCurrentOffer,
+    setLimits,
   }
 }
 
@@ -90,11 +90,11 @@ export default function Main() {
     amount,
     setAmount,
     debouncedGetOffers,
-    setCurrentOffer,
+    // setCurrentOffer,
     offers,
     fixed,
     setUseFix,
-    currentOffer,
+    setLimits
   } = useSearchExchangeAmount()
 
   const [fresh, setFresh] = useState(true)
@@ -131,7 +131,7 @@ export default function Main() {
 
     const _from = fromObj.symbol
     setFrom(_from)
-    updateMinAmounts(_from, to)
+    updateLimitAmounts(_from, to)
   }
 
   let handleToCoinChange = async label => {
@@ -140,7 +140,7 @@ export default function Main() {
     setSelectedTo(toObj)
     const _to = toObj.symbol
     setTo(_to)
-    updateMinAmounts(from, _to)
+    updateLimitAmounts(from, _to)
   }
 
   let handleAmountChange = async event => {
@@ -156,8 +156,9 @@ export default function Main() {
     setRefundAddress(event.target.value)
   }
 
-  let updateMinAmounts = async (_from, _to) => {
-    const { minAmountFixed, minAmountFloat } = await Changelly.getMinMaxForFloatAndFix(_from, _to)
+  let updateLimitAmounts = async (_from, _to) => {
+    const {limits, minAmountFixed, minAmountFloat} = await Aggregator.getLimitsForPair(_from, _to)
+    setLimits(limits)
     setMinAmountFloat(minAmountFloat)
     setMinAmountFixed(minAmountFixed)
   }
@@ -167,7 +168,7 @@ export default function Main() {
       setFresh(false)
       updateCurrencies(_currencies)
     })
-    updateMinAmounts(from, to)
+    updateLimitAmounts(from, to)
   }
 
   return (
@@ -261,7 +262,7 @@ export default function Main() {
                         onChange={(index) => {
                           console.log(`setting index ${index}`)
                           setOfferIndex(index)
-                          setCurrentOffer(offers[index])
+                          // setCurrentOffer(offers[index])
                         }}
                         selected={selectedOfferIndex}
                         items={
@@ -277,7 +278,7 @@ export default function Main() {
                                       description: `${offer.exchange}`,
                                     }
                               })
-                            : [{ description: `No ${fixed ? 'fix rate' : 'float rate'} offers ` }]
+                            : [{ title:'', description: `No ${fixed ? 'fix rate' : 'float rate'} offers ` }]
                         }
                       />
                     )}
@@ -300,7 +301,7 @@ export default function Main() {
                     onChange={setToSearchTerm}
                     value={toSearchTerm}
                     onSelect={handleToCoinChange}
-                    renderSelected={x => <LinkBase disabled>{x.label}</LinkBase>}
+                    renderSelected={x => <>{x.label}</>}
                     selected={selectedTo}
                     onSelectedClick={() => {
                       setSelectedTo(null)

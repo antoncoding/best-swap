@@ -43,9 +43,6 @@ export default function ExchangeModal(
               refundExtraId
             )
 
-            transaction.exchange = 'Changelly'
-            // console.log(transaction)
-
             setOpened(true)
             updateTransaction(transaction)
             break

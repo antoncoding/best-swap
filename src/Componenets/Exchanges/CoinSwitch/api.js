@@ -1,5 +1,8 @@
-const URI = 'https://cors-anywhere.herokuapp.com/https://api.coinswitch.co/v2/'
-const API_KEY = process.env.REACT_APP_COINSWITCH_KEY
+const URI_PREFIX = process.env.REACT_APP_CORS_PREFIX || ''
+const URI = URI_PREFIX + 'https://api.coinswitch.co/v2/'
+console.log(URI)
+// const API_KEY = process.env.REACT_APP_COINSWITCH_KEY
+const API_KEY = "cRbHFJTlL6aSfZ0K2q7nj6MgV5Ih4hbA2fUG0ueO"
 if (!API_KEY) throw Error('Missing CoinSwitch APIKey')
 
 /**
@@ -118,6 +121,7 @@ const requestCoinSwitch = async (endpoint, method, params) => {
       if (resJson.success) return resJson.data
       throw resJson.msg
     } catch (error) {
+      console.error(error)
       throw new Error(`Pair not supported`)
     }
   } else {

@@ -1,7 +1,8 @@
 import * as Changelly from './Changelly/index'
 import * as CoinSwitch from './CoinSwitch/index'
 
-export const getBestOffer = async (from, to, amount, fix) => {
+export const getBestOffer = async (from, to, amount, fix, limits) => {
+  console.log(`with limit`, limits)
   const offers = await Promise.all([
     Changelly.getExchangeAmount(from, to, amount, fix),
     CoinSwitch.getExchangeAmount(from, to, amount, fix)
@@ -17,9 +18,16 @@ export const getBestOffer = async (from, to, amount, fix) => {
   return { offers, bestOffer }
 }
 
-export const getMinForPair = async (from, to) => {
-  const [ changellyMinMax, coinSwitchMinMax ] = await Promise.all([
-    Changelly.getMinMaxForFloatAndFix(from, to)
-
+export const getLimitsForPair = async (from, to) => {
+  const limits = await Promise.all([
+    Changelly.getMinMaxForPair(from, to),
+    CoinSwitch.getMinMaxForPair(from, to)
   ])
+
+  const validLimits = limits.filter(limit => !limit.error)
+
+  const minAmountFloat = Math.min(...validLimits.map(limit=>Number(limit.minAmountFloat)))
+  const minAmountFixed = Math.min(...validLimits.map(limit=>Number(limit.minAmountFixed)))
+
+  return { limits, minAmountFixed, minAmountFloat };
 }
